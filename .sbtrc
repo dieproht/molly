@@ -1,0 +1,2 @@
+# shortcut for running all formatting related commands
+alias fmt=;scalafixAll;scalafmtSbt;scalafmtAll
