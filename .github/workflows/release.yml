@@ -15,7 +15,7 @@ jobs:
         with:
           java-version: "openjdk@1.17"
       - uses: olafurpg/setup-gpg@v3
-      - run: sbt +ci-release
+      - run: sbt ";clean;+ci-release"
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
