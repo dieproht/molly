@@ -1,6 +1,7 @@
 package molly.core
 
 import cats.effect.kernel.Async
+import cats.syntax.functor.*
 import com.mongodb.bulk.BulkWriteResult
 import com.mongodb.client.model.IndexModel
 import com.mongodb.client.model.WriteModel
@@ -17,6 +18,7 @@ import org.bson.BsonDocument
 import org.bson.Document
 import org.bson.conversions.Bson
 
+import java.lang
 import scala.jdk.CollectionConverters.*
 
 /** Molly's counterpart to
@@ -101,4 +103,8 @@ final case class MollyCollection[F[_]: Async] private[core] (
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#listIndexes()]]
      */
    def listIndexes(): F[List[Document]] = fromPublisher(delegate.listIndexes(), 1).compile.toList
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#countDocuments(org.bson.conversions.Bson)]]
+     */
+   def countDocuments(filter: Bson): F[Long] = fromSinglePublisher(delegate.countDocuments(filter)).map(_.toLong)
 }
