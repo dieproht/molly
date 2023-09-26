@@ -5,6 +5,8 @@ import com.dimafeng.testcontainers.MongoDBContainer
 import com.mongodb.MongoBulkWriteException
 import com.mongodb.client.model.DeleteOneModel
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.IndexModel
+import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.InsertOneModel
 import com.mongodb.client.model.Updates
 import com.mongodb.client.model.WriteModel
@@ -320,6 +322,24 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
             coll <- db.getCollection("properror")
             res  <- coll.insertMany(Seq(doc1, doc2, doc2a)).attempt
          } yield expect(res.left.map(_.getClass) == Left(classOf[MongoBulkWriteException]))
+      }
+   }
+
+   test("create and list indexes") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val idx1 = new IndexModel(Indexes.ascending("foo"))
+         val idx2 = new IndexModel(Indexes.descending("bar"))
+         for {
+            db        <- client.getDatabase("test")
+            coll      <- db.getCollection("indexes")
+            idxCreate <- coll.createIndexes(Seq(idx1, idx2))
+            idxList   <- coll.listIndexes()
+         } yield {
+            expect(idxCreate.contains("foo_1"))
+               .and(expect(idxCreate.contains("bar_-1")))
+               .and(expect(idxList.exists(_.getString("name") == "foo_1")))
+               .and(expect(idxList.exists(_.getString("name") == "bar_-1")))
+         }
       }
    }
 }
