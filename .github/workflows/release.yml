@@ -13,7 +13,7 @@ jobs:
       - uses: coursier/cache-action@v6
       - uses: olafurpg/setup-scala@v11
         with:
-          java-version: "openjdk@1.17"
+          java-version: "temurin@17"
       - uses: olafurpg/setup-gpg@v3
       - run: sbt ci-release
         env:
