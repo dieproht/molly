@@ -2,6 +2,7 @@ package molly.core
 
 import cats.effect.kernel.Async
 import com.mongodb.bulk.BulkWriteResult
+import com.mongodb.client.model.IndexModel
 import com.mongodb.client.model.WriteModel
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.InsertManyResult
@@ -10,8 +11,10 @@ import com.mongodb.client.result.UpdateResult
 import com.mongodb.reactivestreams.client.MongoCollection
 import molly.core.query.FindQuery
 import molly.core.query.WatchQuery
+import molly.core.reactivestreams.fromPublisher
 import molly.core.reactivestreams.fromSinglePublisher
 import org.bson.BsonDocument
+import org.bson.Document
 import org.bson.conversions.Bson
 
 import scala.jdk.CollectionConverters.*
@@ -89,4 +92,13 @@ final case class MollyCollection[F[_]: Async] private[core] (
    def findOneAndUpdate(filter: Bson, update: Bson): F[BsonDocument] = fromSinglePublisher(
       delegate.findOneAndUpdate(filter, update)
    )
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#createIndexes(java.util.List)]]
+     */
+   def createIndexes(indexes: Seq[IndexModel]): F[List[String]] =
+      fromPublisher(delegate.createIndexes(indexes.asJava), 1).compile.toList
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#listIndexes()]]
+     */
+   def listIndexes(): F[List[Document]] = fromPublisher(delegate.listIndexes(), 1).compile.toList
 }
