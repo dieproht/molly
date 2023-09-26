@@ -342,4 +342,19 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          }
       }
    }
+
+   test("countDocuments: count documents given a filter") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("foo", new BsonString("bar"))
+         val doc2 = new BsonDocument("foo", new BsonString("baz"))
+         val doc3 = new BsonDocument("foo", new BsonString("barry"))
+         for {
+            db    <- client.getDatabase("test")
+            coll  <- db.getCollection("countDocuments")
+            _     <- coll.insertMany(Seq(doc1, doc2, doc3))
+            count <- coll.countDocuments(Filters.regex("foo", "bar.*"))
+         } yield expect(count == 2L)
+      }
+   }
+
 }
