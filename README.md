@@ -1,6 +1,7 @@
 # Molly
 
 ![Build status](https://github.com/dieproht/molly/actions/workflows/build.yml/badge.svg)
+[![molly-core Scala version support](https://index.scala-lang.org/dieproht/molly/molly-core/latest.svg)](https://index.scala-lang.org/dieproht/molly/molly-core)
 
 ## A thin Cats Effect / FS2 layer over MongoDB
 
