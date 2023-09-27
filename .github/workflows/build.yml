@@ -11,11 +11,11 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - name: Cache
-      uses: coursier/cache-action@v6
-    - name: Setup Scala
-      uses: olafurpg/setup-scala@v11
+    - name: Setup Java and Scala
+      uses: actions/setup-java@v3
       with:
-        java-version: "openjdk@1.17"
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'sbt'
     - name: Build and Test
       run: sbt -v +test
