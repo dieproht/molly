@@ -47,7 +47,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
       }
    }
 
-   test("find: return first found document from collection") { containers =>
+   test("find first: return first found document from collection") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
          val doc1 = new BsonDocument("foo", new BsonString("bar"))
          val doc2 = new BsonDocument("fooo", new BsonString("baz"))
@@ -66,6 +66,20 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
       }
    }
 
+   test("find first: return no document when there is no match") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("foo", new BsonString("bar"))
+         val doc2 = new BsonDocument("foo", new BsonString("baz"))
+         val doc3 = new BsonDocument("foo", new BsonString("lol"))
+         for {
+            db     <- client.getDatabase("test")
+            coll   <- db.getCollection("find4")
+            _      <- coll.insertMany(Seq(doc1, doc2, doc3))
+            result <- coll.find(Filters.eq("foo", "x")).first
+         } yield expect(result.isEmpty)
+      }
+   }
+
    test("find: return all documents matching the given filter") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
          val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("x", new BsonInt32(47))
@@ -73,7 +87,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          val doc3 = new BsonDocument("_id", new BsonInt32(3)).append("x", new BsonInt32(99))
          for {
             db      <- client.getDatabase("test")
-            coll    <- db.getCollection("find4")
+            coll    <- db.getCollection("find5")
             _       <- coll.insertMany(Seq(doc1, doc2, doc3))
             results <- coll.find(Filters.gt("x", 25)).list
          } yield expect(results.size == 2)
