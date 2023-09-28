@@ -390,4 +390,18 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
       }
    }
 
+   test("estimatedDocumentCount: estimate document count") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("foo", new BsonString("bar"))
+         val doc2 = new BsonDocument("foo", new BsonString("baz"))
+         val doc3 = new BsonDocument("foo", new BsonString("barry"))
+         for {
+            db    <- client.getDatabase("test")
+            coll  <- db.getCollection("estimatedDocumentCount")
+            _     <- coll.insertMany(Seq(doc1, doc2, doc3))
+            count <- coll.estimatedDocumentCount()
+         } yield expect(count == 3L)
+      }
+   }
+
 }

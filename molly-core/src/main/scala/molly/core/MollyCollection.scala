@@ -107,4 +107,8 @@ final case class MollyCollection[F[_]: Async] private[core] (
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#countDocuments(org.bson.conversions.Bson)]]
      */
    def countDocuments(filter: Bson): F[Long] = fromSinglePublisher(delegate.countDocuments(filter)).map(_.toLong)
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#estimatedDocumentCount()]]
+     */
+   def estimatedDocumentCount(): F[Long] = fromSinglePublisher(delegate.estimatedDocumentCount()).map(_.toLong)
 }
