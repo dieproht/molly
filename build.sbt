@@ -60,10 +60,10 @@ lazy val molly_core = project
             "org.typelevel"      %% "cats-core"                      % "2.9.0",
             "org.typelevel"      %% "cats-effect-kernel"             % "3.5.1",
             //
-            "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.40.17" % Test,
-            "com.disneystreaming" %% "weaver-cats"                  % "0.8.3"   % Test,
-            "org.slf4j"            % "slf4j-simple"                 % "2.0.7"   % Test,
-            "org.typelevel"       %% "cats-effect"                  % "3.5.1"   % Test
+            "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.0" % Test,
+            "com.disneystreaming" %% "weaver-cats"                  % "0.8.3"  % Test,
+            "org.slf4j"            % "slf4j-simple"                 % "2.0.7"  % Test,
+            "org.typelevel"       %% "cats-effect"                  % "3.5.1"  % Test
          ),
       testFrameworks += new TestFramework("weaver.framework.CatsEffect")
    )
