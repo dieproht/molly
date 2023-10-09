@@ -10,6 +10,7 @@ import com.mongodb.client.model.IndexModel
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.InsertOneModel
+import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.Updates
 import com.mongodb.client.model.WriteModel
 import org.bson.BsonDocument
@@ -19,6 +20,7 @@ import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
 
 import java.util.concurrent.TimeUnit
+import com.mongodb.client.model.FindOneAndReplaceOptions
 
 object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport {
 
@@ -260,7 +262,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          val doc2a = new BsonDocument("_id", new BsonInt32(2)).append("x", new BsonInt32(99))
          for {
             db      <- client.getDatabase("test")
-            coll    <- db.getCollection("replaceOne")
+            coll    <- db.getCollection("replaceOne1")
             _       <- coll.insertMany(Seq(doc1, doc2))
             res     <- coll.replaceOne(Filters.eq("_id", 2), doc2a)
             results <- coll.find().list
@@ -268,6 +270,38 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
             .and(expect(results.contains(doc1)))
             .and(expect(!results.contains(doc2)))
             .and(expect(results.contains(doc2a)))
+      }
+   }
+
+   test("replaceOne: replace one document in collection - insert if it doesn't exist") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("x", new BsonInt32(47))
+         val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("x", new BsonInt32(99))
+         for {
+            db      <- client.getDatabase("test")
+            coll    <- db.getCollection("replaceOne2")
+            _       <- coll.insertMany(Seq(doc1))
+            res     <- coll.replaceOne(Filters.eq("_id", 2), doc2, new ReplaceOptions().upsert(true))
+            results <- coll.find().list
+         } yield expect(results.size == 2)
+            .and(expect(results.contains(doc1)))
+            .and(expect(results.contains(doc2)))
+      }
+   }
+
+   test("replaceOne: replace one document in collection - do not insert if it doesn't exist") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("x", new BsonInt32(47))
+         val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("x", new BsonInt32(99))
+         for {
+            db      <- client.getDatabase("test")
+            coll    <- db.getCollection("replaceOne3")
+            _       <- coll.insertMany(Seq(doc1))
+            res     <- coll.replaceOne(Filters.eq("_id", 2), doc2, new ReplaceOptions().upsert(false))
+            results <- coll.find().list
+         } yield expect(results.size == 1)
+            .and(expect(results.contains(doc1)))
+            .and(expect(!results.contains(doc2)))
       }
    }
 
@@ -329,14 +363,14 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
       }
    }
 
-   test("findOneAndReplace: return on document and replace it in collection") { containers =>
+   test("findOneAndReplace: return one document and replace it in collection") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
          val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("foo", new BsonString("bar"))
          val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("baz"))
          val doc2a = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("yoo"))
          for {
             db      <- client.getDatabase("test")
-            coll    <- db.getCollection("findOneAndReplace")
+            coll    <- db.getCollection("findOneAndReplace1")
             _       <- coll.insertMany(Seq(doc1, doc2))
             resDoc  <- coll.findOneAndReplace(Filters.eq("_id", 2), doc2a)
             resColl <- coll.find().list
@@ -345,6 +379,50 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
             .and(expect(resColl.contains(doc1)))
             .and(expect(resColl.contains(doc2a)))
       }
+   }
+
+   test("findOneAndReplace: return one document and replace it in collection - insert if it doesn't exist") {
+      containers =>
+         withClient(containers) { (client: MollyClient[IO]) =>
+            val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("foo", new BsonString("bar"))
+            val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("yoo"))
+            for {
+               db   <- client.getDatabase("test")
+               coll <- db.getCollection("findOneAndReplace2")
+               _    <- coll.insertOne(doc1)
+               resDoc <- coll.findOneAndReplace(
+                  Filters.eq("_id", 2),
+                  doc2,
+                  new FindOneAndReplaceOptions().upsert(true)
+               )
+               resColl <- coll.find().list
+            } yield expect(resDoc == None)
+               .and(expect(resColl.size == 2))
+               .and(expect(resColl.contains(doc1)))
+               .and(expect(resColl.contains(doc2)))
+         }
+   }
+
+   test("findOneAndReplace: return one document and replace it in collection - do not insert if it doesn't exist") {
+      containers =>
+         withClient(containers) { (client: MollyClient[IO]) =>
+            val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("foo", new BsonString("bar"))
+            val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("yoo"))
+            for {
+               db   <- client.getDatabase("test")
+               coll <- db.getCollection("findOneAndReplace3")
+               _    <- coll.insertOne(doc1)
+               resDoc <- coll.findOneAndReplace(
+                  Filters.eq("_id", 2),
+                  doc2,
+                  new FindOneAndReplaceOptions().upsert(false)
+               )
+               resColl <- coll.find().list
+            } yield expect(resDoc == None)
+               .and(expect(resColl.size == 1))
+               .and(expect(resColl.contains(doc1)))
+               .and(expect(!resColl.contains(doc2)))
+         }
    }
 
    test("findOneAndUpdate: return on document and replace it in collection") { containers =>

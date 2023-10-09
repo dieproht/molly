@@ -22,6 +22,9 @@ import java.lang
 import scala.jdk.CollectionConverters.*
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.CreateIndexOptions
+import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.client.model.FindOneAndReplaceOptions
+import molly.core.reactivestreams.fromOptionPublisher
 
 /** Molly's counterpart to
   * [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html MongoCollection]].
@@ -71,6 +74,13 @@ final case class MollyCollection[F[_]: Async] private[core] (
       delegate.replaceOne(filter, replacement)
    )
 
+   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#replaceOne(org.bson.conversions.Bson,TDocument,com.mongodb.client.model.ReplaceOptions)]]
+     */
+   def replaceOne(filter: Bson, replacement: BsonDocument, options: ReplaceOptions): F[UpdateResult] =
+      fromSinglePublisher(
+         delegate.replaceOne(filter, replacement, options)
+      )
+
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#updateOne(org.bson.conversions.Bson,org.bson.conversions.Bson)]]
      */
    def updateOne(filter: Bson, update: Bson): F[UpdateResult] = fromSinglePublisher(delegate.updateOne(filter, update))
@@ -90,6 +100,17 @@ final case class MollyCollection[F[_]: Async] private[core] (
    def findOneAndReplace(filter: Bson, replacement: BsonDocument): F[BsonDocument] = fromSinglePublisher(
       delegate.findOneAndReplace(filter, replacement)
    )
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#findOneAndReplace(org.bson.conversions.Bson,TDocument,com.mongodb.client.model.FindOneAndReplaceOptions)]]
+     */
+   def findOneAndReplace(
+    filter: Bson,
+    replacement: BsonDocument,
+    options: FindOneAndReplaceOptions
+   ): F[Option[BsonDocument]] =
+      fromOptionPublisher(
+         delegate.findOneAndReplace(filter, replacement, options)
+      )
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#findOneAndUpdate(com.mongodb.reactivestreams.client.ClientSession,org.bson.conversions.Bson,org.bson.conversions.Bson)]]
      */
