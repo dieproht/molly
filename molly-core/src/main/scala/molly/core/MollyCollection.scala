@@ -20,6 +20,8 @@ import org.bson.conversions.Bson
 
 import java.lang
 import scala.jdk.CollectionConverters.*
+import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.CreateIndexOptions
 
 /** Molly's counterpart to
   * [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html MongoCollection]].
@@ -95,10 +97,25 @@ final case class MollyCollection[F[_]: Async] private[core] (
       delegate.findOneAndUpdate(filter, update)
    )
 
+   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#createIndex(org.bson.conversions.Bson)]]
+     */
+   def createIndex(key: Bson): F[String] = fromSinglePublisher(delegate.createIndex(key))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#createIndex(org.bson.conversions.Bson,com.mongodb.client.model.IndexOptions)]]
+     */
+   def createIndex(key: Bson, options: IndexOptions): F[String] = fromSinglePublisher(
+      delegate.createIndex(key, options)
+   )
+
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#createIndexes(java.util.List)]]
      */
    def createIndexes(indexes: Seq[IndexModel]): F[List[String]] =
       fromPublisher(delegate.createIndexes(indexes.asJava), 1).compile.toList
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#createIndexes(java.util.List,com.mongodb.client.model.CreateIndexOptions)]]
+     */
+   def createIndexes(indexes: Seq[IndexModel], createIndexOptions: CreateIndexOptions): F[List[String]] =
+      fromPublisher(delegate.createIndexes(indexes.asJava, createIndexOptions), 1).compile.toList
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#listIndexes()]]
      */
