@@ -3,9 +3,11 @@ package molly.core
 import cats.effect.IO
 import com.dimafeng.testcontainers.MongoDBContainer
 import com.mongodb.MongoBulkWriteException
+import com.mongodb.client.model.CreateIndexOptions
 import com.mongodb.client.model.DeleteOneModel
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexModel
+import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.InsertOneModel
 import com.mongodb.client.model.Updates
@@ -15,6 +17,8 @@ import org.bson.BsonInt32
 import org.bson.BsonString
 import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
+
+import java.util.concurrent.TimeUnit
 
 object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport {
 
@@ -380,7 +384,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          val idx2 = new IndexModel(Indexes.descending("bar"))
          for {
             db        <- client.getDatabase("test")
-            coll      <- db.getCollection("indexes")
+            coll      <- db.getCollection("indexes1")
             idxCreate <- coll.createIndexes(Seq(idx1, idx2))
             idxList   <- coll.listIndexes()
          } yield {
@@ -388,6 +392,52 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                .and(expect(idxCreate.contains("bar_-1")))
                .and(expect(idxList.exists(_.getString("name") == "foo_1")))
                .and(expect(idxList.exists(_.getString("name") == "bar_-1")))
+         }
+      }
+   }
+
+   test("create and list indexes with options") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val idx1 = new IndexModel(Indexes.ascending("foo"))
+         val idx2 = new IndexModel(Indexes.descending("bar"))
+         for {
+            db        <- client.getDatabase("test")
+            coll      <- db.getCollection("indexes2")
+            idxCreate <- coll.createIndexes(Seq(idx1, idx2), new CreateIndexOptions().maxTime(3, TimeUnit.SECONDS))
+            idxList   <- coll.listIndexes()
+         } yield {
+            expect(idxCreate.contains("foo_1"))
+               .and(expect(idxCreate.contains("bar_-1")))
+               .and(expect(idxList.exists(_.getString("name") == "foo_1")))
+               .and(expect(idxList.exists(_.getString("name") == "bar_-1")))
+         }
+      }
+   }
+
+   test("create and list index") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         for {
+            db        <- client.getDatabase("test")
+            coll      <- db.getCollection("index1")
+            idxCreate <- coll.createIndex(Indexes.ascending("foo"))
+            idxList   <- coll.listIndexes()
+         } yield {
+            expect(idxCreate.contains("foo_1"))
+               .and(expect(idxList.exists(i => i.getString("name") == "foo_1")))
+         }
+      }
+   }
+
+   test("create and list index with options") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         for {
+            db        <- client.getDatabase("test")
+            coll      <- db.getCollection("index2")
+            idxCreate <- coll.createIndex(Indexes.ascending("foo"), new IndexOptions().unique(true))
+            idxList   <- coll.listIndexes()
+         } yield {
+            expect(idxCreate.contains("foo_1"))
+               .and(expect(idxList.exists(i => i.getString("name") == "foo_1" && i.getBoolean("unique") == true)))
          }
       }
    }
