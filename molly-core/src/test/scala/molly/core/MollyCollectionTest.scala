@@ -96,6 +96,22 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
       }
    }
 
+   test("find: return all documents matching the given chained filter") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("x", new BsonInt32(47))
+         val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("x", new BsonInt32(20))
+         val doc3 = new BsonDocument("_id", new BsonInt32(3)).append("x", new BsonInt32(99))
+         for {
+            db      <- client.getDatabase("test")
+            coll    <- db.getCollection("find6")
+            _       <- coll.insertMany(Seq(doc1, doc2, doc3))
+            results <- coll.find().filter(Filters.gt("x", 25)).list
+         } yield expect(results.size == 2)
+            .and(expect(results.contains(doc1)))
+            .and(expect(results.contains(doc3)))
+      }
+   }
+
    test("bulkWrite: write given documents to collection") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
          val doc1 = new BsonDocument("foo", new BsonString("bar"))
