@@ -6,6 +6,7 @@ import com.mongodb.MongoBulkWriteException
 import com.mongodb.client.model.CreateIndexOptions
 import com.mongodb.client.model.DeleteOneModel
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.FindOneAndReplaceOptions
 import com.mongodb.client.model.IndexModel
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
@@ -20,7 +21,6 @@ import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
 
 import java.util.concurrent.TimeUnit
-import com.mongodb.client.model.FindOneAndReplaceOptions
 
 object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport {
 

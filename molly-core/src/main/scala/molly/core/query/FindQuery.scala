@@ -3,7 +3,7 @@ package molly.core.query
 import cats.effect.kernel.Async
 import com.mongodb.reactivestreams.client.FindPublisher
 import fs2.Stream
-import molly.core.reactivestreams.fromPublisher
+import molly.core.reactivestreams.fromStreamPublisher
 import org.bson.BsonDocument
 import org.bson.conversions.Bson
 
@@ -18,5 +18,5 @@ final case class FindQuery[F[_]: Async] private[core] (private[core] val publish
 
    def list: F[List[BsonDocument]] = stream.compile.toList
 
-   def stream: Stream[F, BsonDocument] = fromPublisher(publisher, bufferSize = 1)
+   def stream: Stream[F, BsonDocument] = fromStreamPublisher(publisher, bufferSize = 1)
 }
