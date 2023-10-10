@@ -12,7 +12,7 @@ import org.reactivestreams.Subscription
   */
 object reactivestreams {
 
-   def fromPublisher[F[_]: Async, A](pub: Publisher[A], bufferSize: Int): Stream[F, A] =
+   def fromStreamPublisher[F[_]: Async, A](pub: Publisher[A], bufferSize: Int): Stream[F, A] =
       fs2.interop.reactivestreams.fromPublisher(pub, bufferSize)
 
    def fromSinglePublisher[F[_]: Async, A](pub: Publisher[A]): F[A] =
@@ -27,12 +27,13 @@ object reactivestreams {
          })
       )
 
-   def fromVoidPublisher[F[_]: Async, A](pub: Publisher[A]): F[Unit] =
-      Async[F].async_((callback: Either[Throwable, Unit] => Unit) =>
+   def fromOptionPublisher[F[_]: Async, A](pub: Publisher[A]): F[Option[A]] =
+      Async[F].async_((callback: Either[Throwable, Option[A]] => Unit) =>
          pub.subscribe(new Subscriber[A] {
-            override def onComplete(): Unit = callback(Right(()))
+            private var result: Option[A] = None
+            override def onComplete(): Unit = callback(Right(result))
             override def onError(err: Throwable): Unit = callback(Left(err))
-            override def onNext(res: A): Unit = ()
+            override def onNext(res: A): Unit = result = Option(res)
             override def onSubscribe(sub: Subscription): Unit = sub.request(1)
          })
       )
