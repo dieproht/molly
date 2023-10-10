@@ -353,13 +353,30 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("baz"))
          for {
             db      <- client.getDatabase("test")
-            coll    <- db.getCollection("findOneAndDelete")
+            coll    <- db.getCollection("findOneAndDelete1")
             _       <- coll.insertMany(Seq(doc1, doc2))
             resDoc  <- coll.findOneAndDelete(Filters.eq("_id", 2))
             resColl <- coll.find().list
-         } yield expect(resDoc == doc2)
+         } yield expect(resDoc == Some(doc2))
             .and(expect(resColl.size == 1))
             .and(expect(resColl.contains(doc1)))
+      }
+   }
+
+   test("findOneAndDelete: return and delete nothing if nothing matches the given filter") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("foo", new BsonString("bar"))
+         val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("baz"))
+         for {
+            db      <- client.getDatabase("test")
+            coll    <- db.getCollection("findOneAndDelete2")
+            _       <- coll.insertMany(Seq(doc1, doc2))
+            resDoc  <- coll.findOneAndDelete(Filters.eq("_id", 3))
+            resColl <- coll.find().list
+         } yield expect(resDoc == None)
+            .and(expect(resColl.size == 2))
+            .and(expect(resColl.contains(doc1)))
+            .and(expect(resColl.contains(doc2)))
       }
    }
 
@@ -370,14 +387,33 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          val doc2a = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("yoo"))
          for {
             db      <- client.getDatabase("test")
-            coll    <- db.getCollection("findOneAndReplace1")
+            coll    <- db.getCollection("findOneAndReplace")
             _       <- coll.insertMany(Seq(doc1, doc2))
             resDoc  <- coll.findOneAndReplace(Filters.eq("_id", 2), doc2a)
             resColl <- coll.find().list
-         } yield expect(resDoc == doc2)
+         } yield expect(resDoc == Some(doc2))
             .and(expect(resColl.size == 2))
             .and(expect(resColl.contains(doc1)))
             .and(expect(resColl.contains(doc2a)))
+      }
+   }
+
+   test("findOneAndReplace: return and replace nothing if nothing matches the given filter") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("foo", new BsonString("bar"))
+         val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("baz"))
+         val doc3 = new BsonDocument("_id", new BsonInt32(3)).append("foo", new BsonString("yoo"))
+         for {
+            db      <- client.getDatabase("test")
+            coll    <- db.getCollection("findOneAndReplace1")
+            _       <- coll.insertMany(Seq(doc1, doc2))
+            resDoc  <- coll.findOneAndReplace(Filters.eq("_id", 3), doc3)
+            resColl <- coll.find().list
+         } yield expect(resDoc == None)
+            .and(expect(resColl.size == 2))
+            .and(expect(resColl.contains(doc1)))
+            .and(expect(resColl.contains(doc2)))
+            .and(expect(!resColl.contains(doc3)))
       }
    }
 
@@ -425,21 +461,40 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          }
    }
 
-   test("findOneAndUpdate: return on document and replace it in collection") { containers =>
+   test("findOneAndUpdate: return on document and update it in collection") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
          val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("foo", new BsonString("bar"))
          val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("baz"))
          val doc2a = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("yoo"))
          for {
             db      <- client.getDatabase("test")
-            coll    <- db.getCollection("findOneAndUpdate")
+            coll    <- db.getCollection("findOneAndUpdate1")
             _       <- coll.insertMany(Seq(doc1, doc2))
             resDoc  <- coll.findOneAndUpdate(Filters.eq("_id", 2), Updates.set("foo", "yoo"))
             resColl <- coll.find().list
-         } yield expect(resDoc == doc2)
+         } yield expect(resDoc == Some(doc2))
             .and(expect(resColl.size == 2))
             .and(expect(resColl.contains(doc1)))
             .and(expect(resColl.contains(doc2a)))
+      }
+   }
+
+   test("findOneAndUpdate: return and update nothing if nothing matches the given filter") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("foo", new BsonString("bar"))
+         val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("baz"))
+         val doc3 = new BsonDocument("_id", new BsonInt32(3)).append("foo", new BsonString("yoo"))
+         for {
+            db      <- client.getDatabase("test")
+            coll    <- db.getCollection("findOneAndUpdate2")
+            _       <- coll.insertMany(Seq(doc1, doc2))
+            resDoc  <- coll.findOneAndUpdate(Filters.eq("_id", 3), Updates.set("foo", "yoo"))
+            resColl <- coll.find().list
+         } yield expect(resDoc == None)
+            .and(expect(resColl.size == 2))
+            .and(expect(resColl.contains(doc1)))
+            .and(expect(resColl.contains(doc2)))
+            .and(expect(!resColl.contains(doc3)))
       }
    }
 

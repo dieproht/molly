@@ -93,11 +93,11 @@ final case class MollyCollection[F[_]: Async] private[core] (
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#findOneAndDelete(org.bson.conversions.Bson)]]
      */
-   def findOneAndDelete(filter: Bson): F[BsonDocument] = fromSinglePublisher(delegate.findOneAndDelete(filter))
+   def findOneAndDelete(filter: Bson): F[Option[BsonDocument]] = fromOptionPublisher(delegate.findOneAndDelete(filter))
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#findOneAndReplace(org.bson.conversions.Bson,TDocument)]]
      */
-   def findOneAndReplace(filter: Bson, replacement: BsonDocument): F[BsonDocument] = fromSinglePublisher(
+   def findOneAndReplace(filter: Bson, replacement: BsonDocument): F[Option[BsonDocument]] = fromOptionPublisher(
       delegate.findOneAndReplace(filter, replacement)
    )
 
@@ -114,7 +114,7 @@ final case class MollyCollection[F[_]: Async] private[core] (
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#findOneAndUpdate(com.mongodb.reactivestreams.client.ClientSession,org.bson.conversions.Bson,org.bson.conversions.Bson)]]
      */
-   def findOneAndUpdate(filter: Bson, update: Bson): F[BsonDocument] = fromSinglePublisher(
+   def findOneAndUpdate(filter: Bson, update: Bson): F[Option[BsonDocument]] = fromOptionPublisher(
       delegate.findOneAndUpdate(filter, update)
    )
 
