@@ -14,6 +14,7 @@ import com.mongodb.client.result.InsertManyResult
 import com.mongodb.client.result.InsertOneResult
 import com.mongodb.client.result.UpdateResult
 import com.mongodb.reactivestreams.client.MongoCollection
+import molly.core.query.AggregateQuery
 import molly.core.query.FindQuery
 import molly.core.query.WatchQuery
 import molly.core.reactivestreams.fromOptionPublisher
@@ -32,6 +33,12 @@ import scala.jdk.CollectionConverters.*
 final case class MollyCollection[F[_]: Async] private[core] (
  private[core] val delegate: MongoCollection[BsonDocument]
 ) {
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#aggregate(java.util.List)]]
+     */
+   def aggregate(pipeline: Seq[Bson]): AggregateQuery[F] = AggregateQuery(
+      delegate.aggregate(pipeline.asJava, classOf[BsonDocument])
+   )
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#find()]]
      */

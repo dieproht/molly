@@ -1,18 +1,15 @@
 package molly.core.query
 
 import cats.effect.kernel.Async
-import com.mongodb.reactivestreams.client.FindPublisher
+import com.mongodb.reactivestreams.client.AggregatePublisher
 import fs2.Stream
 import molly.core.reactivestreams.fromOptionPublisher
 import molly.core.reactivestreams.fromStreamPublisher
 import org.bson.BsonDocument
-import org.bson.conversions.Bson
 
-final case class FindQuery[F[_]: Async] private[core] (private[core] val publisher: FindPublisher[BsonDocument]) {
-
-   def filter(filter: Bson): FindQuery[F] = FindQuery(publisher.filter(filter))
-
-   def limit(limit: Int): FindQuery[F] = FindQuery(publisher.limit(limit))
+final case class AggregateQuery[F[_]: Async] private[core] (
+ private[core] val publisher: AggregatePublisher[BsonDocument]
+) {
 
    def first: F[Option[BsonDocument]] = fromOptionPublisher(publisher.first)
 
