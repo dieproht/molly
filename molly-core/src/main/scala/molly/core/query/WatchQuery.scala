@@ -4,7 +4,7 @@ import cats.effect.kernel.Async
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.reactivestreams.client.ChangeStreamPublisher
 import fs2.Stream
-import molly.core.reactivestreams.fromPublisher
+import molly.core.reactivestreams.fromStreamPublisher
 import org.bson.BsonDocument
 
 final case class WatchQuery[F[_]: Async] private[core] (
@@ -21,5 +21,5 @@ final case class WatchQuery[F[_]: Async] private[core] (
 
    def list: F[List[ChangeStreamDocument[BsonDocument]]] = stream.compile.toList
 
-   def stream: Stream[F, ChangeStreamDocument[BsonDocument]] = fromPublisher(publisher, bufferSize = 1)
+   def stream: Stream[F, ChangeStreamDocument[BsonDocument]] = fromStreamPublisher(publisher, bufferSize = 1)
 }

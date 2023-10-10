@@ -3,7 +3,11 @@ package molly.core
 import cats.effect.kernel.Async
 import cats.syntax.functor.*
 import com.mongodb.bulk.BulkWriteResult
+import com.mongodb.client.model.CreateIndexOptions
+import com.mongodb.client.model.FindOneAndReplaceOptions
 import com.mongodb.client.model.IndexModel
+import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.WriteModel
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.InsertManyResult
@@ -12,19 +16,15 @@ import com.mongodb.client.result.UpdateResult
 import com.mongodb.reactivestreams.client.MongoCollection
 import molly.core.query.FindQuery
 import molly.core.query.WatchQuery
-import molly.core.reactivestreams.fromPublisher
+import molly.core.reactivestreams.fromOptionPublisher
 import molly.core.reactivestreams.fromSinglePublisher
+import molly.core.reactivestreams.fromStreamPublisher
 import org.bson.BsonDocument
 import org.bson.Document
 import org.bson.conversions.Bson
 
 import java.lang
 import scala.jdk.CollectionConverters.*
-import com.mongodb.client.model.IndexOptions
-import com.mongodb.client.model.CreateIndexOptions
-import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.client.model.FindOneAndReplaceOptions
-import molly.core.reactivestreams.fromOptionPublisher
 
 /** Molly's counterpart to
   * [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html MongoCollection]].
@@ -131,16 +131,16 @@ final case class MollyCollection[F[_]: Async] private[core] (
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#createIndexes(java.util.List)]]
      */
    def createIndexes(indexes: Seq[IndexModel]): F[List[String]] =
-      fromPublisher(delegate.createIndexes(indexes.asJava), 1).compile.toList
+      fromStreamPublisher(delegate.createIndexes(indexes.asJava), 1).compile.toList
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#createIndexes(java.util.List,com.mongodb.client.model.CreateIndexOptions)]]
      */
    def createIndexes(indexes: Seq[IndexModel], createIndexOptions: CreateIndexOptions): F[List[String]] =
-      fromPublisher(delegate.createIndexes(indexes.asJava, createIndexOptions), 1).compile.toList
+      fromStreamPublisher(delegate.createIndexes(indexes.asJava, createIndexOptions), 1).compile.toList
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#listIndexes()]]
      */
-   def listIndexes(): F[List[Document]] = fromPublisher(delegate.listIndexes(), 1).compile.toList
+   def listIndexes(): F[List[Document]] = fromStreamPublisher(delegate.listIndexes(), 1).compile.toList
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#countDocuments(org.bson.conversions.Bson)]]
      */
