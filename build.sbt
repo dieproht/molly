@@ -40,7 +40,11 @@ def commonSettings = Seq(
                "-Wunused:all"
             )
          case _ =>
-            Seq("-Xsource:3", "-release:17")
+            Seq(
+               "-Xsource:3",
+               "-Wconf:msg=Seq in package scala has changed semantics:s,msg=constructor modifiers are assumed:s",
+               "-release:17"
+            )
       })
 )
 
