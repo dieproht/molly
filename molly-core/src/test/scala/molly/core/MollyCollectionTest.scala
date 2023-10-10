@@ -3,6 +3,7 @@ package molly.core
 import cats.effect.IO
 import com.dimafeng.testcontainers.MongoDBContainer
 import com.mongodb.MongoBulkWriteException
+import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.CreateIndexOptions
 import com.mongodb.client.model.DeleteOneModel
 import com.mongodb.client.model.Filters
@@ -11,6 +12,7 @@ import com.mongodb.client.model.IndexModel
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.InsertOneModel
+import com.mongodb.client.model.Projections
 import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.Updates
 import com.mongodb.client.model.WriteModel
@@ -25,6 +27,43 @@ import java.util.concurrent.TimeUnit
 object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport {
 
    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse("mongo:latest"))
+
+   test("aggregate: perform aggregation pipeline on empty collection") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         for {
+            db      <- client.getDatabase("test")
+            coll    <- db.getCollection("aggregate1")
+            results <- coll.aggregate(Seq(Aggregates.project(Projections.include("foo", "bar")))).list
+         } yield expect(results.isEmpty)
+      }
+   }
+
+   test("aggregate: perform aggregation pipeline on documents") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("_id", new BsonInt32(1))
+            .append("foo", new BsonInt32(47))
+            .append("bar", new BsonString("wer"))
+            .append("bee", new BsonInt32(7576))
+         val doc2 = new BsonDocument("_id", new BsonInt32(2))
+            .append("foo", new BsonInt32(20))
+            .append("bar", new BsonString("drg"))
+            .append("bee", new BsonInt32(9438))
+         val doc3 = new BsonDocument("_id", new BsonInt32(3))
+            .append("foo", new BsonInt32(99))
+            .append("bar", new BsonString("jrn"))
+            .append("bee", new BsonInt32(3333))
+         for {
+            db      <- client.getDatabase("test")
+            coll    <- db.getCollection("aggregate2")
+            _       <- coll.insertMany(Seq(doc1, doc2, doc3))
+            results <- coll.aggregate(Seq(Aggregates.project(Projections.include("foo", "bar")))).list
+         } yield expect(results.size == 3)
+            .and(expect(results.forall(_.containsKey("_id"))))
+            .and(expect(results.forall(_.containsKey("foo"))))
+            .and(expect(results.forall(_.containsKey("bar"))))
+            .and(expect(results.forall(!_.containsKey("bee"))))
+      }
+   }
 
    test("find: return no document from empty collection") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
