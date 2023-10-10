@@ -57,7 +57,7 @@ lazy val molly_core = project
             "org.mongodb"         % "mongodb-driver-core"            % "4.10.2",
             "org.mongodb"         % "mongodb-driver-reactivestreams" % "4.10.2",
             "org.reactivestreams" % "reactive-streams"               % "1.0.4",
-            "org.typelevel"      %% "cats-core"                      % "2.9.0",
+            "org.typelevel"      %% "cats-core"                      % "2.10.0",
             "org.typelevel"      %% "cats-effect-kernel"             % "3.5.1",
             //
             "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.0" % Test,
