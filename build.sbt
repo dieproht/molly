@@ -72,4 +72,26 @@ lazy val molly_core = project
       testFrameworks += new TestFramework("weaver.framework.CatsEffect")
    )
 
-lazy val molly = project.in(file(".")).settings(publish / skip := true).aggregate(molly_core)
+lazy val molly_medeia = project
+   .in(file("molly-medeia"))
+   .settings(commonSettings: _*)
+   .settings(
+      name := "molly-medeia",
+      libraryDependencies ++=
+         Seq(
+            "de.megaera"    %% "medeia"             % "0.10.0",
+            "org.mongodb"    % "bson"               % "4.10.2",
+            "org.typelevel" %% "cats-core"          % "2.10.0",
+            "org.typelevel" %% "cats-effect-kernel" % "3.5.2",
+            //
+            "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.0" % Test,
+            "com.disneystreaming" %% "weaver-cats"                  % "0.8.3"  % Test,
+            "org.mongodb"          % "mongodb-driver-core"          % "4.10.2",
+            "org.slf4j"            % "slf4j-simple"                 % "2.0.9"  % Test,
+            "org.typelevel"       %% "cats-effect"                  % "3.5.2"  % Test
+         ),
+      testFrameworks += new TestFramework("weaver.framework.CatsEffect")
+   )
+   .dependsOn(molly_core % "compile->compile;test->test")
+
+lazy val molly = project.in(file(".")).settings(publish / skip := true).aggregate(molly_core, molly_medeia)

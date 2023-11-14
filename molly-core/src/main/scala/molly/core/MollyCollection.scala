@@ -1,7 +1,9 @@
 package molly.core
 
 import cats.effect.kernel.Async
+import cats.syntax.flatMap.*
 import cats.syntax.functor.*
+import cats.syntax.traverse.*
 import com.mongodb.bulk.BulkWriteResult
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.InsertManyResult
@@ -31,15 +33,16 @@ import scala.jdk.CollectionConverters.*
 /** Molly's counterpart to
   * [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html MongoCollection]].
   */
-final case class MollyCollection[F[_]: Async] private[core] (
- private[core] val delegate: MongoCollection[BsonDocument]
+final case class MollyCollection[F[_], A] private[core] (private[core] val delegate: MongoCollection[BsonDocument])(
+ implicit
+ f: Async[F],
+ codec: MollyCodec[F, A]
 ) {
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#aggregate(java.util.List)]]
      */
-   def aggregate(pipeline: Seq[Bson]): AggregateQuery[F] = AggregateQuery(
-      delegate.aggregate(pipeline.asJava, classOf[BsonDocument])
-   )
+   def aggregate(pipeline: Seq[Bson]): AggregateQuery[F] =
+      AggregateQuery(delegate.aggregate(pipeline.asJava, classOf[BsonDocument]))
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#bulkWrite(java.util.List)]]
      */
@@ -56,9 +59,8 @@ final case class MollyCollection[F[_]: Async] private[core] (
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#createIndex(org.bson.conversions.Bson,com.mongodb.client.model.IndexOptions)]]
      */
-   def createIndex(key: Bson, options: IndexOptions): F[String] = fromSinglePublisher(
-      delegate.createIndex(key, options)
-   )
+   def createIndex(key: Bson, options: IndexOptions): F[String] =
+      fromSinglePublisher(delegate.createIndex(key, options))
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#createIndexes(java.util.List)]]
      */
@@ -84,48 +86,61 @@ final case class MollyCollection[F[_]: Async] private[core] (
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#find()]]
      */
-   def find(): FindQuery[F] = FindQuery(delegate.find())
+   def find(): FindQuery[F, A] = FindQuery(delegate.find())
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#find(org.bson.conversions.Bson)]]
      */
-   def find(filter: Bson): FindQuery[F] = FindQuery(delegate.find(filter))
+   def find(filter: Bson): FindQuery[F, A] = FindQuery(delegate.find(filter))
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#findOneAndDelete(org.bson.conversions.Bson)]]
      */
-   def findOneAndDelete(filter: Bson): F[Option[BsonDocument]] = fromOptionPublisher(delegate.findOneAndDelete(filter))
+   def findOneAndDelete(filter: Bson): F[Option[A]] =
+      for {
+         resultDoc <- fromOptionPublisher(delegate.findOneAndDelete(filter))
+         result    <- resultDoc.traverse(codec.decode)
+      } yield result
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#findOneAndReplace(org.bson.conversions.Bson,TDocument)]]
      */
-   def findOneAndReplace(filter: Bson, replacement: BsonDocument): F[Option[BsonDocument]] = fromOptionPublisher(
-      delegate.findOneAndReplace(filter, replacement)
-   )
+   def findOneAndReplace(filter: Bson, replacement: A): F[Option[A]] =
+      for {
+         replacementDoc <- codec.encode(replacement)
+         resultDoc      <- fromOptionPublisher(delegate.findOneAndReplace(filter, replacementDoc))
+         result         <- resultDoc.traverse(codec.decode)
+      } yield result
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#findOneAndReplace(org.bson.conversions.Bson,TDocument,com.mongodb.client.model.FindOneAndReplaceOptions)]]
      */
-   def findOneAndReplace(
-    filter: Bson,
-    replacement: BsonDocument,
-    options: FindOneAndReplaceOptions
-   ): F[Option[BsonDocument]] =
-      fromOptionPublisher(
-         delegate.findOneAndReplace(filter, replacement, options)
-      )
+   def findOneAndReplace(filter: Bson, replacement: A, options: FindOneAndReplaceOptions): F[Option[A]] =
+      for {
+         replacementDoc <- codec.encode(replacement)
+         resultDoc      <- fromOptionPublisher(delegate.findOneAndReplace(filter, replacementDoc, options))
+         result         <- resultDoc.traverse(codec.decode)
+      } yield result
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#findOneAndUpdate(com.mongodb.reactivestreams.client.ClientSession,org.bson.conversions.Bson,org.bson.conversions.Bson)]]
      */
-   def findOneAndUpdate(filter: Bson, update: Bson): F[Option[BsonDocument]] = fromOptionPublisher(
-      delegate.findOneAndUpdate(filter, update)
-   )
+   def findOneAndUpdate(filter: Bson, update: Bson): F[Option[A]] =
+      for {
+         resultDoc <- fromOptionPublisher(delegate.findOneAndUpdate(filter, update))
+         result    <- resultDoc.traverse(codec.decode)
+      } yield result
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#insertMany(java.util.List)]]
      */
-   def insertMany(documents: Seq[BsonDocument]): F[InsertManyResult] = fromSinglePublisher(
-      delegate.insertMany(documents.asJava)
-   )
+   def insertMany(documents: Seq[A]): F[InsertManyResult] =
+      for {
+         documumentsDocs <- documents.traverse(codec.encode)
+         result          <- fromSinglePublisher(delegate.insertMany(documumentsDocs.asJava))
+      } yield result
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#insertOne(TDocument)]]
      */
-   def insertOne(document: BsonDocument): F[InsertOneResult] = fromSinglePublisher(delegate.insertOne(document))
+   def insertOne(document: A): F[InsertOneResult] =
+      for {
+         documentDoc <- codec.encode(document)
+         result      <- fromSinglePublisher(delegate.insertOne(documentDoc))
+      } yield result
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#listIndexes()]]
      */
@@ -133,22 +148,24 @@ final case class MollyCollection[F[_]: Async] private[core] (
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#replaceOne(org.bson.conversions.Bson,TDocument)]]
      */
-   def replaceOne(filter: Bson, replacement: BsonDocument): F[UpdateResult] = fromSinglePublisher(
-      delegate.replaceOne(filter, replacement)
-   )
+   def replaceOne(filter: Bson, replacement: A): F[UpdateResult] =
+      for {
+         replacementDoc <- codec.encode(replacement)
+         result         <- fromSinglePublisher(delegate.replaceOne(filter, replacementDoc))
+      } yield result
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#replaceOne(org.bson.conversions.Bson,TDocument,com.mongodb.client.model.ReplaceOptions)]]
      */
-   def replaceOne(filter: Bson, replacement: BsonDocument, options: ReplaceOptions): F[UpdateResult] =
-      fromSinglePublisher(
-         delegate.replaceOne(filter, replacement, options)
-      )
+   def replaceOne(filter: Bson, replacement: A, options: ReplaceOptions): F[UpdateResult] =
+      for {
+         replacementDoc <- codec.encode(replacement)
+         result         <- fromSinglePublisher(delegate.replaceOne(filter, replacementDoc, options))
+      } yield result
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#updateMany(org.bson.conversions.Bson,org.bson.conversions.Bson)]]
      */
-   def updateMany(filter: Bson, update: Bson): F[UpdateResult] = fromSinglePublisher(
-      delegate.updateMany(filter, update)
-   )
+   def updateMany(filter: Bson, update: Bson): F[UpdateResult] =
+      fromSinglePublisher(delegate.updateMany(filter, update))
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#updateOne(org.bson.conversions.Bson,org.bson.conversions.Bson)]]
      */
@@ -162,5 +179,5 @@ final case class MollyCollection[F[_]: Async] private[core] (
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#watch()]]
      */
-   def watch(): WatchQuery[F] = WatchQuery(delegate.watch(classOf[BsonDocument]))
+   def watch(): WatchQuery[F, A] = WatchQuery(delegate.watch(classOf[BsonDocument]))
 }
