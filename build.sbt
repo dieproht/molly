@@ -57,9 +57,9 @@ lazy val molly_core = project
          Seq(
             "co.fs2"             %% "fs2-core"                       % "3.9.2",
             "co.fs2"             %% "fs2-reactive-streams"           % "3.9.2",
-            "org.mongodb"         % "bson"                           % "4.11.1",
-            "org.mongodb"         % "mongodb-driver-core"            % "4.11.1",
-            "org.mongodb"         % "mongodb-driver-reactivestreams" % "4.11.1",
+            "org.mongodb"         % "bson"                           % "4.10.2",
+            "org.mongodb"         % "mongodb-driver-core"            % "4.10.2",
+            "org.mongodb"         % "mongodb-driver-reactivestreams" % "4.10.2",
             "org.reactivestreams" % "reactive-streams"               % "1.0.4",
             "org.typelevel"      %% "cats-core"                      % "2.10.0",
             "org.typelevel"      %% "cats-effect-kernel"             % "3.5.2",
