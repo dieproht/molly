@@ -3,22 +3,8 @@ package molly.core
 import cats.effect.IO
 import com.dimafeng.testcontainers.MongoDBContainer
 import com.mongodb.MongoBulkWriteException
-import com.mongodb.client.model.Aggregates
-import com.mongodb.client.model.CreateIndexOptions
-import com.mongodb.client.model.DeleteOneModel
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.FindOneAndReplaceOptions
-import com.mongodb.client.model.IndexModel
-import com.mongodb.client.model.IndexOptions
-import com.mongodb.client.model.Indexes
-import com.mongodb.client.model.InsertOneModel
-import com.mongodb.client.model.Projections
-import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.client.model.Updates
-import com.mongodb.client.model.WriteModel
-import org.bson.BsonDocument
-import org.bson.BsonInt32
-import org.bson.BsonString
+import com.mongodb.client.model.*
+import org.bson.{BsonDocument, BsonInt32, BsonString}
 import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
 
@@ -587,6 +573,26 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
             .and(expect(!results.contains(doc2)))
             .and(expect(results.contains(doc2a)))
             .and(expect(results.contains(doc3)))
+      }
+   }
+
+   test("updateOne: upsert one document in collection") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("x", new BsonInt32(47))
+         val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("x", new BsonInt32(20))
+         val doc3 = new BsonDocument("_id", new BsonInt32(3)).append("x", new BsonInt32(99))
+         val doc4 = new BsonDocument("_id", new BsonInt32(4)).append("x", new BsonInt32(1024))
+         for {
+            db      <- client.getDatabase("test")
+            coll    <- db.getCollection("updateOne2")
+            _       <- coll.insertMany(Seq(doc1, doc2, doc3))
+            _       <- coll.updateOne(Filters.eq("_id", 4), Updates.inc("x", 1024), new UpdateOptions().upsert(true))
+            results <- coll.find().list
+         } yield expect(results.size == 4)
+            .and(expect(results.contains(doc1)))
+            .and(expect(results.contains(doc2)))
+            .and(expect(results.contains(doc3)))
+            .and(expect(results.contains(doc4)))
       }
    }
 

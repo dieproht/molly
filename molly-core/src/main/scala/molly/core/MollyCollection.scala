@@ -3,12 +3,15 @@ package molly.core
 import cats.effect.kernel.Async
 import cats.syntax.functor.*
 import com.mongodb.bulk.BulkWriteResult
-import com.mongodb.client.model.CreateIndexOptions
-import com.mongodb.client.model.FindOneAndReplaceOptions
-import com.mongodb.client.model.IndexModel
-import com.mongodb.client.model.IndexOptions
-import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.client.model.WriteModel
+import com.mongodb.client.model.{
+   CreateIndexOptions,
+   FindOneAndReplaceOptions,
+   IndexModel,
+   IndexOptions,
+   ReplaceOptions,
+   UpdateOptions,
+   WriteModel
+}
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.InsertManyResult
 import com.mongodb.client.result.InsertOneResult
@@ -152,6 +155,12 @@ final case class MollyCollection[F[_]: Async] private[core] (
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#updateOne(org.bson.conversions.Bson,org.bson.conversions.Bson)]]
      */
    def updateOne(filter: Bson, update: Bson): F[UpdateResult] = fromSinglePublisher(delegate.updateOne(filter, update))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#updateOne(org.bson.conversions.Bson,org.bson.conversions.Bson, com.mongodb.client.model.UpdateOptions)]]
+     */
+   def updateOne(filter: Bson, update: Bson, options: UpdateOptions): F[UpdateResult] = fromSinglePublisher(
+      delegate.updateOne(filter, update, options)
+   )
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#watch()]]
      */

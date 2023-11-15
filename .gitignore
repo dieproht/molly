@@ -4,3 +4,7 @@
 .vscode/
 target/
 metals.sbt
+
+# ignore intellij files
+.idea/
+*.iml
