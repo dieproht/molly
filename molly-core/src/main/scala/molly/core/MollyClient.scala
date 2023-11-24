@@ -4,6 +4,7 @@ import cats.effect.kernel.Async
 import cats.effect.kernel.Resource
 import cats.syntax.functor.*
 import com.mongodb.MongoClientSettings
+import com.mongodb.connection.ClusterDescription
 import com.mongodb.reactivestreams.client.MongoClient
 import com.mongodb.reactivestreams.client.MongoClients
 
@@ -16,6 +17,10 @@ final case class MollyClient[F[_]: Async] private (private[core] val delegate: M
      */
    def getDatabase(name: String): F[MollyDatabase[F]] =
       Async[F].delay(delegate.getDatabase(name)).map(MollyDatabase(_))
+
+      /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoClient.html#getClusterDescription()]]
+        */
+   def getClusterDescription(): ClusterDescription = delegate.getClusterDescription()
 }
 
 object MollyClient {
