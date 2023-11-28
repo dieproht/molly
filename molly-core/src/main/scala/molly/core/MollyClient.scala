@@ -18,8 +18,14 @@ final case class MollyClient[F[_]: Async] private (private[core] val delegate: M
    def getDatabase(name: String): F[MollyDatabase[F]] =
       Async[F].delay(delegate.getDatabase(name)).map(MollyDatabase(_))
 
-      /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoClient.html#getClusterDescription()]]
-        */
+   /** Like [[this.getDatabase]], but returns a
+     * [[https://typelevel.org/cats-effect/api/3.x/cats/effect/kernel/Resource.html Resource]]
+     */
+   def getDatabaseAsResource(name: String): Resource[F, MollyDatabase[F]] =
+      Resource.eval(getDatabase(name))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoClient.html#getClusterDescription()]]
+     */
    def getClusterDescription(): ClusterDescription = delegate.getClusterDescription()
 }
 
