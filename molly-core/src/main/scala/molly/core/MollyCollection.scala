@@ -3,20 +3,18 @@ package molly.core
 import cats.effect.kernel.Async
 import cats.syntax.functor.*
 import com.mongodb.bulk.BulkWriteResult
-import com.mongodb.client.model.{
-   CreateIndexOptions,
-   FindOneAndReplaceOptions,
-   IndexModel,
-   IndexOptions,
-   ReplaceOptions,
-   UpdateOptions,
-   WriteModel
-}
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.InsertManyResult
 import com.mongodb.client.result.InsertOneResult
 import com.mongodb.client.result.UpdateResult
 import com.mongodb.reactivestreams.client.MongoCollection
+import molly.core.model.CreateIndexOptions
+import molly.core.model.FindOneAndReplaceOptions
+import molly.core.model.IndexModel
+import molly.core.model.IndexOptions
+import molly.core.model.ReplaceOptions
+import molly.core.model.UpdateOptions
+import molly.core.model.WriteModel
 import molly.core.query.AggregateQuery
 import molly.core.query.FindQuery
 import molly.core.query.WatchQuery
@@ -45,7 +43,7 @@ final case class MollyCollection[F[_]: Async] private[core] (
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#bulkWrite(java.util.List)]]
      */
-   def bulkWrite(requests: Seq[WriteModel[BsonDocument]]): F[BulkWriteResult] =
+   def bulkWrite(requests: Seq[WriteModel]): F[BulkWriteResult] =
       fromSinglePublisher(delegate.bulkWrite(requests.asJava))
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#countDocuments(org.bson.conversions.Bson)]]

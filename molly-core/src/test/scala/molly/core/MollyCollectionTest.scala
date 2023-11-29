@@ -3,8 +3,23 @@ package molly.core
 import cats.effect.IO
 import com.dimafeng.testcontainers.MongoDBContainer
 import com.mongodb.MongoBulkWriteException
-import com.mongodb.client.model.*
-import org.bson.{BsonDocument, BsonInt32, BsonString}
+import com.mongodb.client.model.Aggregates
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Indexes
+import com.mongodb.client.model.Projections
+import com.mongodb.client.model.Updates
+import molly.core.model.CreateIndexOptions
+import molly.core.model.DeleteOneModel
+import molly.core.model.FindOneAndReplaceOptions
+import molly.core.model.IndexModel
+import molly.core.model.IndexOptions
+import molly.core.model.InsertOneModel
+import molly.core.model.ReplaceOptions
+import molly.core.model.UpdateOptions
+import molly.core.model.WriteModel
+import org.bson.BsonDocument
+import org.bson.BsonInt32
+import org.bson.BsonString
 import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
 
@@ -56,7 +71,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          val doc1 = new BsonDocument("foo", new BsonString("bar"))
          val doc2 = new BsonDocument("fooo", new BsonString("baz"))
          val doc3 = new BsonDocument("fu", new BsonInt32(24))
-         val writeCommands = Seq(new InsertOneModel(doc1), new InsertOneModel(doc2), new InsertOneModel(doc3))
+         val writeCommands = Seq(InsertOneModel(doc1), InsertOneModel(doc2), InsertOneModel(doc3))
          for {
             db      <- client.getDatabase("test")
             coll    <- db.getCollection("bulkWrite1")
@@ -73,11 +88,11 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
       withClient(containers) { (client: MollyClient[IO]) =>
          val doc1 = new BsonDocument("foo", new BsonString("bar"))
          val doc2 = new BsonDocument("foo", new BsonString("baz"))
-         val writeCommands: Seq[WriteModel[BsonDocument]] =
+         val writeCommands: Seq[WriteModel] =
             Seq(
-               new InsertOneModel(doc1),
-               new InsertOneModel(doc2),
-               new DeleteOneModel(Filters.eq("foo", "bar"))
+               InsertOneModel(doc1),
+               InsertOneModel(doc2),
+               DeleteOneModel(Filters.eq("foo", "bar"))
             )
          for {
             db      <- client.getDatabase("test")
@@ -121,7 +136,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          for {
             db        <- client.getDatabase("test")
             coll      <- db.getCollection("index2")
-            idxCreate <- coll.createIndex(Indexes.ascending("foo"), new IndexOptions().unique(true))
+            idxCreate <- coll.createIndex(Indexes.ascending("foo"), IndexOptions().unique(true))
             idxList   <- coll.listIndexes()
          } yield {
             expect(idxCreate.contains("foo_1"))
@@ -132,8 +147,8 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
 
    test("create and list indexes") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
-         val idx1 = new IndexModel(Indexes.ascending("foo"))
-         val idx2 = new IndexModel(Indexes.descending("bar"))
+         val idx1 = IndexModel(Indexes.ascending("foo"))
+         val idx2 = IndexModel(Indexes.descending("bar"))
          for {
             db        <- client.getDatabase("test")
             coll      <- db.getCollection("indexes1")
@@ -150,12 +165,12 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
 
    test("create and list indexes with options") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
-         val idx1 = new IndexModel(Indexes.ascending("foo"))
-         val idx2 = new IndexModel(Indexes.descending("bar"))
+         val idx1 = IndexModel(Indexes.ascending("foo"))
+         val idx2 = IndexModel(Indexes.descending("bar"))
          for {
             db        <- client.getDatabase("test")
             coll      <- db.getCollection("indexes2")
-            idxCreate <- coll.createIndexes(Seq(idx1, idx2), new CreateIndexOptions().maxTime(3, TimeUnit.SECONDS))
+            idxCreate <- coll.createIndexes(Seq(idx1, idx2), CreateIndexOptions().maxTime(3, TimeUnit.SECONDS))
             idxList   <- coll.listIndexes()
          } yield {
             expect(idxCreate.contains("foo_1"))
@@ -385,7 +400,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                resDoc <- coll.findOneAndReplace(
                   Filters.eq("_id", 2),
                   doc2,
-                  new FindOneAndReplaceOptions().upsert(true)
+                  FindOneAndReplaceOptions().upsert(true)
                )
                resColl <- coll.find().list
             } yield expect(resDoc == None)
@@ -407,7 +422,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                resDoc <- coll.findOneAndReplace(
                   Filters.eq("_id", 2),
                   doc2,
-                  new FindOneAndReplaceOptions().upsert(false)
+                  FindOneAndReplaceOptions().upsert(false)
                )
                resColl <- coll.find().list
             } yield expect(resDoc == None)
@@ -510,7 +525,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
             db      <- client.getDatabase("test")
             coll    <- db.getCollection("replaceOne2")
             _       <- coll.insertMany(Seq(doc1))
-            res     <- coll.replaceOne(Filters.eq("_id", 2), doc2, new ReplaceOptions().upsert(true))
+            res     <- coll.replaceOne(Filters.eq("_id", 2), doc2, ReplaceOptions().upsert(true))
             results <- coll.find().list
          } yield expect(results.size == 2)
             .and(expect(results.contains(doc1)))
@@ -526,7 +541,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
             db      <- client.getDatabase("test")
             coll    <- db.getCollection("replaceOne3")
             _       <- coll.insertMany(Seq(doc1))
-            res     <- coll.replaceOne(Filters.eq("_id", 2), doc2, new ReplaceOptions().upsert(false))
+            res     <- coll.replaceOne(Filters.eq("_id", 2), doc2, ReplaceOptions().upsert(false))
             results <- coll.find().list
          } yield expect(results.size == 1)
             .and(expect(results.contains(doc1)))
@@ -586,7 +601,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
             db      <- client.getDatabase("test")
             coll    <- db.getCollection("updateOne2")
             _       <- coll.insertMany(Seq(doc1, doc2, doc3))
-            _       <- coll.updateOne(Filters.eq("_id", 4), Updates.inc("x", 1024), new UpdateOptions().upsert(true))
+            _       <- coll.updateOne(Filters.eq("_id", 4), Updates.inc("x", 1024), UpdateOptions().upsert(true))
             results <- coll.find().list
          } yield expect(results.size == 4)
             .and(expect(results.contains(doc1)))
