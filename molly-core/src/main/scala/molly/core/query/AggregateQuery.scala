@@ -13,7 +13,7 @@ final case class AggregateQuery[F[_]: Async] private[core] (
 
    def first: F[Option[BsonDocument]] = fromOptionPublisher(publisher.first)
 
-   def list: F[List[BsonDocument]] = stream.compile.toList
+   def list(bufferSize: Int = 16): F[List[BsonDocument]] = stream(bufferSize).compile.toList
 
-   def stream: Stream[F, BsonDocument] = fromStreamPublisher(publisher, bufferSize = 1)
+   def stream(bufferSize: Int = 16): Stream[F, BsonDocument] = fromStreamPublisher(publisher, bufferSize)
 }
