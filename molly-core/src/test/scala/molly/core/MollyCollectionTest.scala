@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit
 
 object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport {
 
-   override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse("mongo:latest"))
+   override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse("mongo:7.0"))
 
    test("aggregate: perform aggregation pipeline on empty collection") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
