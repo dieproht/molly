@@ -19,15 +19,15 @@ final case class WatchQuery[F[_], A] private[core] (
  codec: MollyCodec[F, A]
 ) {
 
-   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#resumeAfter(org.bson.BsonDocument)]]
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#resumeAfter(org.bson.BsonDocument)]]
      */
    def resumeAfter(resumeToken: BsonDocument): WatchQuery[F, A] = WatchQuery(publisher.resumeAfter(resumeToken))
 
-   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#batchSize(int)]]
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#batchSize(int)]]
      */
    def batchSize(batchSize: Int): WatchQuery[F, A] = WatchQuery(publisher.batchSize(batchSize))
 
-   /** [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#fullDocument(com.mongodb.client.model.changestream.FullDocument)]]
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#fullDocument(com.mongodb.client.model.changestream.FullDocument)]]
      */
    def fullDocument(fullDocument: FullDocument): WatchQuery[F, A] = WatchQuery(publisher.fullDocument(fullDocument))
 
