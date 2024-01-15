@@ -4,7 +4,7 @@ import org.bson.BsonDocument
 import org.bson.conversions.Bson
 
 /** Convenience layer over
-  * [[https://mongodb.github.io/mongo-java-driver/4.10/apidocs/mongodb-driver-core/com/mongodb/client/model/package-summary.html the Java driver's model classes]].
+  * [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-core/com/mongodb/client/model/package-summary.html the Java driver's model classes]].
   */
 object model {
 
