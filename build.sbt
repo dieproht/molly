@@ -64,9 +64,9 @@ lazy val molly_core = project
             "org.typelevel"      %% "cats-core"                      % "2.10.0",
             "org.typelevel"      %% "cats-effect-kernel"             % "3.5.2",
             //
+            "ch.qos.logback"       % "logback-classic"              % "1.4.14" % Test,
             "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.0" % Test,
             "com.disneystreaming" %% "weaver-cats"                  % "0.8.3"  % Test,
-            "org.slf4j"            % "slf4j-simple"                 % "2.0.9"  % Test,
             "org.typelevel"       %% "cats-effect"                  % "3.5.2"  % Test
          ),
       testFrameworks += new TestFramework("weaver.framework.CatsEffect")
@@ -84,10 +84,9 @@ lazy val molly_medeia = project
             "org.typelevel" %% "cats-core"          % "2.10.0",
             "org.typelevel" %% "cats-effect-kernel" % "3.5.2",
             //
+            "ch.qos.logback"       % "logback-classic"              % "1.4.14" % Test,
             "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.0" % Test,
             "com.disneystreaming" %% "weaver-cats"                  % "0.8.3"  % Test,
-            "org.mongodb"          % "mongodb-driver-core"          % "4.10.2",
-            "org.slf4j"            % "slf4j-simple"                 % "2.0.9"  % Test,
             "org.typelevel"       %% "cats-effect"                  % "3.5.2"  % Test
          ),
       testFrameworks += new TestFramework("weaver.framework.CatsEffect")
