@@ -376,21 +376,21 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
       }
    }
 
-   // test("watch: return one change per inserted document") { containers =>
-   //    withClient(containers) { (client: MollyClient[IO]) =>
-   //       def runChangeStream(coll: MollyCollection[IO, City]) =
-   //          coll.watch().stream(bufferSize = 1).take(3).compile.toList
-   //       for {
-   //          db     <- client.getDatabase("test")
-   //          coll   <- db.getTypedCollection[City]("watch1")
-   //          csDocs <- runChangeStream(coll).both(coll.insertMany(Seq(trier, ludwigslust, flensburg))).map(_._1)
-   //       } yield expect(csDocs.size == 3)
-   //          .and(expect(csDocs.exists(_.getFullDocument == trier)))
-   //          .and(expect(csDocs.exists(_.getFullDocument == ludwigslust)))
-   //          .and(expect(csDocs.exists(_.getFullDocument == flensburg)))
-   //          .and(expect(csDocs.forall(_.getOperationTypeString() == "insert")))
-   //    }
-   // }
+   test("watch: return one change per inserted document") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         def runChangeStream(coll: MollyCollection[IO, City]) =
+            coll.watch().stream(bufferSize = 1).take(3).compile.toList
+         for {
+            db     <- client.getDatabase("test")
+            coll   <- db.getTypedCollection[City]("watch1")
+            csDocs <- runChangeStream(coll).both(coll.insertMany(Seq(trier, ludwigslust, flensburg))).map(_._1)
+         } yield expect(csDocs.size == 3)
+            .and(expect(csDocs.exists(_.getFullDocument == trier)))
+            .and(expect(csDocs.exists(_.getFullDocument == ludwigslust)))
+            .and(expect(csDocs.exists(_.getFullDocument == flensburg)))
+            .and(expect(csDocs.forall(_.getOperationTypeString() == "insert")))
+      }
+   }
 
    // test("watch: return different changes") { containers =>
    //    withClient(containers) { (client: MollyClient[IO]) =>
