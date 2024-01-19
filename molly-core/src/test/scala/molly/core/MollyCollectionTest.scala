@@ -620,7 +620,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("x", new BsonInt32(20))
          val doc3 = new BsonDocument("_id", new BsonInt32(3)).append("x", new BsonInt32(99))
          def runChangeStream(coll: BsonDocumentCollection[IO]) =
-            coll.watch().stream(bufferSize = 1).take(3).compile.toList
+            coll.watch().stream(bufferSize = 1).evalTap(_ => IO.unit).take(3).compile.toList
          for {
             db     <- client.getDatabase("test")
             coll   <- db.getCollection("watch1")
@@ -639,7 +639,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("x", new BsonInt32(20))
          val doc3 = new BsonDocument("_id", new BsonInt32(3)).append("x", new BsonInt32(99))
          def runChangeStream(coll: BsonDocumentCollection[IO]) =
-            coll.watch().stream(bufferSize = 1).take(4).compile.toList
+            coll.watch().stream(bufferSize = 1).evalTap(_ => IO.unit).take(4).compile.toList
          def insertAndUpdate(coll: BsonDocumentCollection[IO]) =
             coll.insertMany(Seq(doc1, doc2, doc3)) >> coll.updateOne(Filters.eq("_id", 2), Updates.set("x", 23))
          for {

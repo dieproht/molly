@@ -379,7 +379,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
    test("watch: return one change per inserted document") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
          def runChangeStream(coll: MollyCollection[IO, City]) =
-            coll.watch().stream(bufferSize = 1).take(3).compile.toList
+            coll.watch().stream(bufferSize = 1).evalTap(_ => IO.unit).take(3).compile.toList
          for {
             db     <- client.getDatabase("test")
             coll   <- db.getTypedCollection[City]("watch1")
@@ -396,7 +396,14 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
       withClient(containers) { (client: MollyClient[IO]) =>
          val largerLudwigslust = ludwigslust.copy(area = 100.3)
          def runChangeStream(coll: MollyCollection[IO, City]) =
-            coll.watch().fullDocument(FullDocument.UPDATE_LOOKUP).stream(bufferSize = 1).take(4).compile.toList
+            coll
+               .watch()
+               .fullDocument(FullDocument.UPDATE_LOOKUP)
+               .stream(bufferSize = 1)
+               .evalTap(_ => IO.unit)
+               .take(4)
+               .compile
+               .toList
          def insertAndUpdate(coll: MollyCollection[IO, City]) =
             coll.insertMany(Seq(trier, ludwigslust, flensburg)) >> coll.updateOne(
                Filters.eq("name", "Ludwigslust"),
