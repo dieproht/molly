@@ -15,6 +15,8 @@ import molly.core.model.ReplaceOptions
 import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
 
+import scala.concurrent.duration.*
+
 object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport {
 
    case class City(name: String, state: String, area: Double, postalCodes: List[String])
@@ -400,6 +402,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                .watch()
                .fullDocument(FullDocument.UPDATE_LOOKUP)
                .stream(bufferSize = 1)
+               .debounce(1.milli)
                // .evalTap(x => IO(println(s"Passing $x")))
                .take(4)
                .compile
@@ -412,7 +415,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
          for {
             db     <- client.getDatabase("test")
             coll   <- db.getTypedCollection[City]("watch2")
-            csDocs <- insertAndUpdate(coll).both(runChangeStream(coll)).map(_._2)
+            csDocs <- runChangeStream(coll).both(insertAndUpdate(coll)).map(_._1)
          } yield expect(csDocs.size == 4)
             .and(expect(csDocs.exists(_.getFullDocument == trier)))
             .and(expect(csDocs.exists(_.getFullDocument == ludwigslust)))
