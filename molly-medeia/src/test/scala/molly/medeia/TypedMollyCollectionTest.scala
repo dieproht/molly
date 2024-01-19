@@ -402,8 +402,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                .watch()
                .fullDocument(FullDocument.UPDATE_LOOKUP)
                .stream(bufferSize = 1)
-               .debounce(10.milli)
-               // .evalTap(x => IO(println(s"Passing $x")))
+               .evalTap(_ => IO.unit)
                .take(4)
                .compile
                .toList
