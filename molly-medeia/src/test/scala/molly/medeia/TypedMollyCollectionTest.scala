@@ -396,7 +396,14 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
       withClient(containers) { (client: MollyClient[IO]) =>
          val largerLudwigslust = ludwigslust.copy(area = 100.3)
          def runChangeStream(coll: MollyCollection[IO, City]) =
-            coll.watch().fullDocument(FullDocument.UPDATE_LOOKUP).stream(bufferSize = 1).take(1).compile.toList
+            coll
+               .watch()
+               .fullDocument(FullDocument.UPDATE_LOOKUP)
+               .stream(bufferSize = 1)
+               .evalTap(x => IO(println(s"Passing $x")))
+               .take(4)
+               .compile
+               .toList
          def insertAndUpdate(coll: MollyCollection[IO, City]) =
             coll.insertMany(Seq(trier, ludwigslust, flensburg)) >> coll.updateOne(
                Filters.eq("name", "Ludwigslust"),
@@ -406,7 +413,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
             db     <- client.getDatabase("test")
             coll   <- db.getTypedCollection[City]("watch2")
             csDocs <- runChangeStream(coll).both(insertAndUpdate(coll)).map(_._1)
-         } yield expect(csDocs.size == 1)
+         } yield expect(csDocs.size == 4)
          // expect(csDocs.size == 4)
          // .and(expect(csDocs.exists(_.getFullDocument == trier)))
          // .and(expect(csDocs.exists(_.getFullDocument == ludwigslust)))
