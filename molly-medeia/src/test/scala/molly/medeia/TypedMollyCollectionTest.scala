@@ -412,15 +412,14 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
          for {
             db     <- client.getDatabase("test")
             coll   <- db.getTypedCollection[City]("watch2")
-            csDocs <- runChangeStream(coll).both(insertAndUpdate(coll)).map(_._1)
+            csDocs <- insertAndUpdate(coll).both(runChangeStream(coll)).map(_._2)
          } yield expect(csDocs.size == 4)
-         // expect(csDocs.size == 4)
-         // .and(expect(csDocs.exists(_.getFullDocument == trier)))
-         // .and(expect(csDocs.exists(_.getFullDocument == ludwigslust)))
-         // .and(expect(csDocs.exists(_.getFullDocument == flensburg)))
-         // .and(expect(csDocs.exists(_.getFullDocument == largerLudwigslust)))
-         // .and(expect(csDocs.take(3).forall(_.getOperationTypeString() == "insert")))
-         // .and(expect(csDocs.last.getOperationTypeString() == "update"))
+            .and(expect(csDocs.exists(_.getFullDocument == trier)))
+            .and(expect(csDocs.exists(_.getFullDocument == ludwigslust)))
+            .and(expect(csDocs.exists(_.getFullDocument == flensburg)))
+            .and(expect(csDocs.exists(_.getFullDocument == largerLudwigslust)))
+            .and(expect(csDocs.take(3).forall(_.getOperationTypeString() == "insert")))
+            .and(expect(csDocs.last.getOperationTypeString() == "update"))
       }
    }
 }
