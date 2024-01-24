@@ -14,6 +14,7 @@ import molly.core.model.FindOneAndReplaceOptions
 import molly.core.model.ReplaceOptions
 import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
+import scala.concurrent.duration.*
 
 object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport {
 
@@ -376,14 +377,21 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
       }
    }
 
+   private val eta = 200.millis
+
    test("watch: return one change per inserted document") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
+
          def runChangeStream(coll: MollyCollection[IO, City]) =
-            coll.watch().stream(bufferSize = 1).evalTap(_ => IO.unit).take(3).compile.toList
+            coll.watch().stream(bufferSize = 1).take(3).compile.toList
+
+         def insert(coll: MollyCollection[IO, City]) =
+            IO.sleep(eta) >> coll.insertMany(Seq(trier, ludwigslust, flensburg))
+
          for {
             db     <- client.getDatabase("test")
             coll   <- db.getTypedCollection[City]("watch1")
-            csDocs <- runChangeStream(coll).both(coll.insertMany(Seq(trier, ludwigslust, flensburg))).map(_._1)
+            csDocs <- runChangeStream(coll).both(insert(coll)).map(_._1)
          } yield expect(csDocs.size == 3)
             .and(expect(csDocs.exists(_.getFullDocument == trier)))
             .and(expect(csDocs.exists(_.getFullDocument == ludwigslust)))
@@ -395,20 +403,22 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
    test("watch: return different changes") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
          val largerLudwigslust = ludwigslust.copy(area = 100.3)
+
          def runChangeStream(coll: MollyCollection[IO, City]) =
             coll
                .watch()
                .fullDocument(FullDocument.UPDATE_LOOKUP)
                .stream(bufferSize = 1)
-               .evalTap(_ => IO.unit)
                .take(4)
                .compile
                .toList
+
          def insertAndUpdate(coll: MollyCollection[IO, City]) =
-            coll.insertMany(Seq(trier, ludwigslust, flensburg)) >> coll.updateOne(
+            IO.sleep(eta) >> coll.insertMany(Seq(trier, ludwigslust, flensburg)) >> coll.updateOne(
                Filters.eq("name", "Ludwigslust"),
                Updates.set("area", 100.3)
             )
+
          for {
             db     <- client.getDatabase("test")
             coll   <- db.getTypedCollection[City]("watch2")

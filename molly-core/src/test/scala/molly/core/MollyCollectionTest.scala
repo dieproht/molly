@@ -23,6 +23,7 @@ import org.bson.BsonInt32
 import org.bson.BsonString
 import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
+import scala.concurrent.duration.*
 
 import java.util.concurrent.TimeUnit
 
@@ -614,17 +615,23 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
       }
    }
 
+   private val eta = 200.millis
+
    test("watch: return one change per inserted document") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
          val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("x", new BsonInt32(47))
          val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("x", new BsonInt32(20))
          val doc3 = new BsonDocument("_id", new BsonInt32(3)).append("x", new BsonInt32(99))
+
          def runChangeStream(coll: BsonDocumentCollection[IO]) =
-            coll.watch().stream(bufferSize = 1).evalTap(_ => IO.unit).take(3).compile.toList
+            coll.watch().stream(bufferSize = 1).take(3).compile.toList
+
+         def insert(coll: BsonDocumentCollection[IO]) = IO.sleep(eta) >> coll.insertMany(Seq(doc1, doc2, doc3))
+
          for {
             db     <- client.getDatabase("test")
             coll   <- db.getCollection("watch1")
-            csDocs <- runChangeStream(coll).both(coll.insertMany(Seq(doc1, doc2, doc3))).map(_._1)
+            csDocs <- runChangeStream(coll).both(insert(coll)).map(_._1)
          } yield expect(csDocs.size == 3)
             .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(1)))))
             .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(2)))))
@@ -638,10 +645,16 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("x", new BsonInt32(47))
          val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("x", new BsonInt32(20))
          val doc3 = new BsonDocument("_id", new BsonInt32(3)).append("x", new BsonInt32(99))
+
          def runChangeStream(coll: BsonDocumentCollection[IO]) =
-            coll.watch().stream(bufferSize = 1).evalTap(_ => IO.unit).take(4).compile.toList
+            coll.watch().stream(bufferSize = 1).take(4).compile.toList
+
          def insertAndUpdate(coll: BsonDocumentCollection[IO]) =
-            coll.insertMany(Seq(doc1, doc2, doc3)) >> coll.updateOne(Filters.eq("_id", 2), Updates.set("x", 23))
+            IO.sleep(eta) >> coll.insertMany(Seq(doc1, doc2, doc3)) >> coll.updateOne(
+               Filters.eq("_id", 2),
+               Updates.set("x", 23)
+            )
+
          for {
             db     <- client.getDatabase("test")
             coll   <- db.getCollection("watch2")
