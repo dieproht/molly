@@ -7,6 +7,7 @@ import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.Projections
+import com.mongodb.client.model.Sorts
 import com.mongodb.client.model.Updates
 import molly.core.bsondocument.BsonDocumentCollection
 import molly.core.model.CreateIndexOptions
@@ -23,9 +24,9 @@ import org.bson.BsonInt32
 import org.bson.BsonString
 import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
-import scala.concurrent.duration.*
 
 import java.util.concurrent.TimeUnit
+import scala.concurrent.duration.*
 
 object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport {
 
@@ -550,6 +551,23 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          } yield expect(results.size == 1)
             .and(expect(results.contains(doc1)))
             .and(expect(!results.contains(doc2)))
+      }
+   }
+
+   test("sort: sort returned documents") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("foo", new BsonString("bar"))
+         val doc2 = new BsonDocument("foo", new BsonString("baz"))
+         val doc3 = new BsonDocument("foo", new BsonString("bay"))
+         for {
+            db      <- client.getDatabase("test")
+            coll    <- db.getCollection("sort")
+            _       <- coll.insertMany(Seq(doc1, doc2, doc3))
+            results <- coll.find().sort(Sorts.descending("foo")).list()
+         } yield expect(results.size == 3)
+            .and(expect(results(0) == doc2))
+            .and(expect(results(1) == doc3))
+            .and(expect(results(2) == doc1))
       }
    }
 

@@ -3,6 +3,7 @@ package molly.medeia
 import cats.effect.IO
 import com.dimafeng.testcontainers.MongoDBContainer
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Sorts
 import com.mongodb.client.model.Updates
 import com.mongodb.client.model.changestream.FullDocument
 import medeia.codec.*
@@ -14,6 +15,7 @@ import molly.core.model.FindOneAndReplaceOptions
 import molly.core.model.ReplaceOptions
 import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
+
 import scala.concurrent.duration.*
 
 object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport {
@@ -338,6 +340,24 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
          } yield expect(results.size == 1)
             .and(expect(results.contains(trier)))
             .and(expect(!results.contains(ludwigslust)))
+      }
+   }
+
+   test("sort: sort returned documents") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         for {
+            db          <- client.getDatabase("test")
+            coll        <- db.getTypedCollection[City]("sort")
+            _           <- coll.insertMany(Seq(trier, ludwigslust, flensburg))
+            resultsAsc  <- coll.find().sort(Sorts.ascending("area")).list()
+            resultsDesc <- coll.find().sort(Sorts.descending("area")).list()
+         } yield expect(resultsAsc.size == 3)
+            .and(expect(resultsAsc(0) == flensburg))
+            .and(expect(resultsAsc(1) == ludwigslust))
+            .and(expect(resultsAsc(2) == trier))
+            .and(expect(resultsDesc(2) == flensburg))
+            .and(expect(resultsDesc(1) == ludwigslust))
+            .and(expect(resultsDesc(0) == trier))
       }
    }
 

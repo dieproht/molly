@@ -17,9 +17,17 @@ final case class FindQuery[F[_], A] private[core] (private[core] val publisher: 
  codec: MollyCodec[F, A]
 ) {
 
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/FindPublisher.html#filter(org.bson.conversions.Bson)]]
+     */
    def filter(filter: Bson): FindQuery[F, A] = FindQuery(publisher.filter(filter))
 
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/FindPublisher.html#limit(int)]]
+     */
    def limit(limit: Int): FindQuery[F, A] = FindQuery(publisher.limit(limit))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/FindPublisher.html#sort(org.bson.conversions.Bson)]]
+     */
+   def sort(sort: Bson): FindQuery[F, A] = FindQuery(publisher.sort(sort))
 
    def first: F[Option[A]] =
       for {
