@@ -10,6 +10,7 @@ import com.mongodb.client.result.InsertManyResult
 import com.mongodb.client.result.InsertOneResult
 import com.mongodb.client.result.UpdateResult
 import com.mongodb.reactivestreams.client.MongoCollection
+import molly.core.model.BulkWriteOptions
 import molly.core.model.CreateIndexOptions
 import molly.core.model.FindOneAndReplaceOptions
 import molly.core.model.IndexModel
@@ -48,6 +49,11 @@ final case class MollyCollection[F[_], A] private[core] (private[core] val deleg
      */
    def bulkWrite(requests: Seq[WriteModel]): F[BulkWriteResult] =
       fromSinglePublisher(delegate.bulkWrite(requests.asJava))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#bulkWrite(java.util.List,com.mongodb.client.model.BulkWriteOptions)]]
+     */
+   def bulkWrite(requests: Seq[WriteModel], options: BulkWriteOptions): F[BulkWriteResult] =
+      fromSinglePublisher(delegate.bulkWrite(requests.asJava, options))
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#countDocuments(org.bson.conversions.Bson)]]
      */

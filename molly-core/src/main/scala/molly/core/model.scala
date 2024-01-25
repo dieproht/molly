@@ -8,6 +8,12 @@ import org.bson.conversions.Bson
   */
 object model {
 
+   type BulkWriteOptions = com.mongodb.client.model.BulkWriteOptions
+
+   object BulkWriteOptions {
+      def apply(): BulkWriteOptions = new BulkWriteOptions()
+   }
+
    type CreateIndexOptions = com.mongodb.client.model.CreateIndexOptions
 
    object CreateIndexOptions {
