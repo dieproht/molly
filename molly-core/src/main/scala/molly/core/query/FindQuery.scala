@@ -29,7 +29,7 @@ final case class FindQuery[F[_], A] private[core] (private[core] val publisher: 
      */
    def sort(sort: Bson): FindQuery[F, A] = FindQuery(publisher.sort(sort))
 
-   def first: F[Option[A]] =
+   def first(): F[Option[A]] =
       for {
          resultDoc <- fromOptionPublisher(publisher.first)
          result    <- resultDoc.traverse(codec.decode)
