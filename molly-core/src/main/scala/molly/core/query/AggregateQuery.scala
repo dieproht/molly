@@ -11,7 +11,7 @@ final case class AggregateQuery[F[_]: Async] private[core] (
  private[core] val publisher: AggregatePublisher[BsonDocument]
 ) {
 
-   def first: F[Option[BsonDocument]] = fromOptionPublisher(publisher.first)
+   def first(): F[Option[BsonDocument]] = fromOptionPublisher(publisher.first)
 
    def list(bufferSize: Int = 16): F[List[BsonDocument]] = stream(bufferSize).compile.toList
 

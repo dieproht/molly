@@ -93,7 +93,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
             db     <- client.getDatabase("test")
             coll   <- db.getTypedCollection[City]("find3")
             _      <- coll.insertMany(Seq(trier, ludwigslust, flensburg))
-            result <- coll.find().first
+            result <- coll.find().first()
          } yield expect(result.isDefined)
             .and(
                expect(result.contains(trier))
@@ -109,7 +109,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
             db     <- client.getDatabase("test")
             coll   <- db.getTypedCollection[City]("find4")
             _      <- coll.insertMany(Seq(trier, ludwigslust, flensburg))
-            result <- coll.find(Filters.eq("name", "Bielefeld")).first
+            result <- coll.find(Filters.eq("name", "Bielefeld")).first()
          } yield expect(result.isEmpty)
       }
    }
