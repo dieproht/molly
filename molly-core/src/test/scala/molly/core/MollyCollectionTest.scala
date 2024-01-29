@@ -267,7 +267,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
             db     <- client.getDatabase("test")
             coll   <- db.getCollection("find3")
             _      <- coll.insertMany(Seq(doc1, doc2, doc3))
-            result <- coll.find().first
+            result <- coll.find().first()
          } yield expect(result.isDefined)
             .and(
                expect(result.contains(doc1))
@@ -286,7 +286,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
             db     <- client.getDatabase("test")
             coll   <- db.getCollection("find4")
             _      <- coll.insertMany(Seq(doc1, doc2, doc3))
-            result <- coll.find(Filters.eq("foo", "x")).first
+            result <- coll.find(Filters.eq("foo", "x")).first()
          } yield expect(result.isEmpty)
       }
    }
