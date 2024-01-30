@@ -65,7 +65,7 @@ lazy val molly_core = project
             "org.typelevel"      %% "cats-effect-kernel"             % "3.5.3",
             //
             "ch.qos.logback"       % "logback-classic"              % "1.4.14" % Test,
-            "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.0" % Test,
+            "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.2" % Test,
             "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
             "org.typelevel"       %% "cats-effect"                  % "3.5.3"  % Test
          ),
@@ -85,7 +85,7 @@ lazy val molly_medeia = project
             "org.typelevel" %% "cats-effect-kernel" % "3.5.3",
             //
             "ch.qos.logback"       % "logback-classic"              % "1.4.14" % Test,
-            "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.0" % Test,
+            "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.2" % Test,
             "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
             "org.typelevel"       %% "cats-effect"                  % "3.5.3"  % Test
          ),
