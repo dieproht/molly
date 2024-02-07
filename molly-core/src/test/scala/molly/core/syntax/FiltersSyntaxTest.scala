@@ -1,6 +1,6 @@
 package molly.core.syntax
 import com.mongodb.client.model.Filters
-import molly.core.syntax.filter.*
+import molly.core.syntax.filters.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 

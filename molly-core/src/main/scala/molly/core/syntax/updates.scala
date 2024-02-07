@@ -5,7 +5,7 @@ import org.bson.conversions.Bson
 
 import scala.language.implicitConversions
 
-object update {
+object updates {
    implicit def mollyUpdatesSyntax(update: Bson): UpdatesExtensions =
       new UpdatesExtensions(update)
 }

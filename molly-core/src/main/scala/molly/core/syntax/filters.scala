@@ -5,7 +5,7 @@ import org.bson.conversions.Bson
 
 import scala.language.implicitConversions
 
-object filter {
+object filters {
    implicit def mollyFiltersSyntax(filter: Bson): FiltersExtensions =
       new FiltersExtensions(filter)
 }

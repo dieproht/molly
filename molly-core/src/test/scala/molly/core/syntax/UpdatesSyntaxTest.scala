@@ -1,7 +1,7 @@
 package molly.core.syntax
 
 import com.mongodb.client.model.Updates
-import molly.core.syntax.update.mollyUpdatesSyntax
+import molly.core.syntax.updates.mollyUpdatesSyntax
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
