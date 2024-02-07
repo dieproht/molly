@@ -67,6 +67,7 @@ lazy val molly_core = project
             "ch.qos.logback"       % "logback-classic"              % "1.4.14" % Test,
             "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.0" % Test,
             "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
+            "org.scalatest"       %% "scalatest"                    % "3.2.17" % Test,
             "org.typelevel"       %% "cats-effect"                  % "3.5.3"  % Test
          ),
       testFrameworks += new TestFramework("weaver.framework.CatsEffect")
