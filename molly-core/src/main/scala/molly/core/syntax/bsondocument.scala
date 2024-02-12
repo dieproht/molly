@@ -15,7 +15,7 @@ object bsondocument {
 
 final class BsonDocumentExtensions(bsonDoc: BsonDocument) {
 
-   /** An extension of append method.
+   /** Append an optional value with the given key to the document.
      *
      * @param key
      *   The key field
@@ -45,7 +45,7 @@ final class BsonDocumentExtensions(bsonDoc: BsonDocument) {
          bsonDoc
       }(v => bsonDoc.append(key, v))
 
-   /** Read the value form the BsonDocument using the key. If the key does not exist or the type of the value is not as
+   /** Read the value from the BsonDocument using the key. If the key does not exist or the type of the value is not as
      * expected, None will be returned
      *
      * @tparam T
