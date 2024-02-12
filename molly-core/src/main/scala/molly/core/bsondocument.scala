@@ -3,7 +3,8 @@ package molly.core
 import cats.effect.kernel.Async
 import org.bson.BsonValue
 
-/** An implementation of [[molly.core.MollyCodec]] for [[org.bson.BsonDocument]] (identity mapping).
+/** Convenience layer over [[org.bson.BsonDocument the Java driver's BsonDocument class]] and an implementation of
+  * [[molly.core.MollyCodec]] for [[org.bson.BsonDocument]] (identity mapping).
   */
 object bsondocument {
 
@@ -16,9 +17,6 @@ object bsondocument {
 
    type BsonDocument = org.bson.BsonDocument
 
-   /** Convenience layer over [[org.bson.BsonDocument the Java driver's BsonDocument class]] and an implementation of
-     * [[molly.core.MollyCodec]] for [[org.bson.BsonDocument]] (identity mapping).
-     */
    object BsonDocument {
       def apply(): BsonDocument = new BsonDocument()
 
