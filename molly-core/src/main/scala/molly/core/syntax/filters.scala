@@ -5,10 +5,12 @@ import org.bson.conversions.Bson
 
 import scala.language.implicitConversions
 
-object filters {
+trait filters {
    implicit def mollyFiltersSyntax(filter: Bson): FiltersExtensions =
       new FiltersExtensions(filter)
 }
+
+object filters extends filters
 
 final class FiltersExtensions(filter: Bson) {
    def and(anotherFilter: Bson): Bson = Filters.and(filter, anotherFilter)

@@ -34,6 +34,7 @@ def commonSettings = Seq(
                "-explain",
                "-explain-types",
                "-deprecation",
+               "-feature",
                "-unchecked",
                "-source:3.3",
                "-release:17",
