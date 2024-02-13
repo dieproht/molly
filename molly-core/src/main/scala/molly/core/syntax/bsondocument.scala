@@ -3,15 +3,20 @@ package molly.core.syntax
 import org.bson.*
 
 import scala.language.implicitConversions
-import scala.reflect.{ClassTag, classTag}
-import scala.util.{Failure, Success, Try}
+import scala.reflect.ClassTag
+import scala.reflect.classTag
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
 
 /** Syntax extensions for [[org.bson.BsonDocument the Java driver's BsonDocument class]].
   */
-object bsondocument {
+trait bsondocument {
    implicit def mollyBsonDocumentSyntax(bsonDoc: BsonDocument): BsonDocumentExtensions =
       new BsonDocumentExtensions(bsonDoc)
 }
+
+object bsondocument extends bsondocument
 
 final class BsonDocumentExtensions(bsonDoc: BsonDocument) {
 
