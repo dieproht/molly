@@ -7,12 +7,14 @@ import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.Projections
+import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Sorts
 import com.mongodb.client.model.Updates
 import molly.core.bsondocument.BsonDocumentCollection
 import molly.core.model.CreateIndexOptions
 import molly.core.model.DeleteOneModel
 import molly.core.model.FindOneAndReplaceOptions
+import molly.core.model.FindOneAndUpdateOptions
 import molly.core.model.IndexModel
 import molly.core.model.IndexOptions
 import molly.core.model.InsertOneModel
@@ -437,7 +439,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
          }
    }
 
-   test("findOneAndUpdate: return on document and update it in collection") { containers =>
+   test("findOneAndUpdate: return one document and update it in collection") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
          val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("foo", new BsonString("bar"))
          val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("baz"))
@@ -471,6 +473,28 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
             .and(expect(resColl.contains(doc1)))
             .and(expect(resColl.contains(doc2)))
             .and(expect(!resColl.contains(doc3)))
+      }
+   }
+
+   test("findOneAndUpdate: update one document in collection and return after") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("foo", new BsonString("bar"))
+         val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("baz"))
+         val doc2a = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("yoo"))
+         for {
+            db   <- client.getDatabase("test")
+            coll <- db.getCollection("findOneAndUpdate3")
+            _    <- coll.insertMany(Seq(doc1, doc2))
+            resDoc <- coll.findOneAndUpdate(
+               Filters.eq("_id", 2),
+               Updates.set("foo", "yoo"),
+               FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
+            )
+            resColl <- coll.find().list()
+         } yield expect(resDoc == Some(doc2a))
+            .and(expect(resColl.size == 2))
+            .and(expect(resColl.contains(doc1)))
+            .and(expect(resColl.contains(doc2a)))
       }
    }
 
