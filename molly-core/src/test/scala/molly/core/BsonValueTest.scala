@@ -1,7 +1,8 @@
 package molly.core
 
 import molly.core.bson.*
-import org.bson.types.{Decimal128, ObjectId}
+import org.bson.types.Decimal128
+import org.bson.types.ObjectId
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 

@@ -3,6 +3,9 @@ package molly.core
 import cats.effect.kernel.Async
 import cats.effect.kernel.Resource
 import cats.syntax.functor.*
+import com.mongodb.ReadConcern
+import com.mongodb.ReadPreference
+import com.mongodb.WriteConcern
 import com.mongodb.reactivestreams.client.MongoDatabase
 import org.bson.BsonDocument
 
@@ -35,4 +38,31 @@ final case class MollyDatabase[F[_]: Async] private[core] (private[core] val del
     codec: MollyCodec[F, A]
    ): Resource[F, MollyCollection[F, A]] =
       Resource.eval(getTypedCollection(collectionName))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getReadConcern()]]
+     */
+   def getReadConcern(): ReadConcern = delegate.getReadConcern()
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getReadPreference()]]
+     */
+   def getReadPreference(): ReadPreference = delegate.getReadPreference()
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getWriteConcern()]]
+     */
+   def getWriteConcern(): WriteConcern = delegate.getWriteConcern()
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#withReadConcern(com.mongodb.ReadConcern)]]
+     */
+   def withReadConcern(readConcern: ReadConcern): MollyDatabase[F] =
+      MollyDatabase(delegate.withReadConcern(readConcern))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#withReadPreference(com.mongodb.ReadPreference]]
+     */
+   def withReadPreference(readPreference: ReadPreference): MollyDatabase[F] =
+      MollyDatabase(delegate.withReadPreference(readPreference))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#withWriteConcern(com.mongodb.WriteConcern)]]
+     */
+   def withWriteConcern(writeConcern: WriteConcern): MollyDatabase[F] =
+      MollyDatabase(delegate.withWriteConcern(writeConcern))
 }
