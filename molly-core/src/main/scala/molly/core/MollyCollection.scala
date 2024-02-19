@@ -4,6 +4,9 @@ import cats.effect.kernel.Async
 import cats.syntax.flatMap.*
 import cats.syntax.functor.*
 import cats.syntax.traverse.*
+import com.mongodb.ReadConcern
+import com.mongodb.ReadPreference
+import com.mongodb.WriteConcern
 import com.mongodb.bulk.BulkWriteResult
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.InsertManyResult
@@ -132,6 +135,18 @@ final case class MollyCollection[F[_], A] private[core] (private[core] val deleg
          result    <- resultDoc.traverse(codec.decode)
       } yield result
 
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#getReadConcern()]]
+     */
+   def getReadConcern(): ReadConcern = delegate.getReadConcern()
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#getReadPreference()]]
+     */
+   def getReadPreference(): ReadPreference = delegate.getReadPreference()
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#getWriteConcern()]]
+     */
+   def getWriteConcern(): WriteConcern = delegate.getWriteConcern()
+
    /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#insertMany(java.util.List)]]
      */
    def insertMany(documents: Seq[A]): F[InsertManyResult] =
@@ -186,4 +201,19 @@ final case class MollyCollection[F[_], A] private[core] (private[core] val deleg
    /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#watch()]]
      */
    def watch(): WatchQuery[F, A] = WatchQuery(delegate.watch(classOf[BsonDocument]))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#withReadConcern(com.mongodb.ReadConcern)]]
+     */
+   def withReadConcern(readConcern: ReadConcern): MollyCollection[F, A] =
+      MollyCollection(delegate.withReadConcern(readConcern))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#withReadPreference(com.mongodb.ReadPreference)]]
+     */
+   def withReadPreference(readPreference: ReadPreference): MollyCollection[F, A] =
+      MollyCollection(delegate.withReadPreference(readPreference))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#withWriteConcern(com.mongodb.WriteConcern)]]
+     */
+   def withWriteConcern(writeConcern: WriteConcern): MollyCollection[F, A] =
+      MollyCollection(delegate.withWriteConcern(writeConcern))
 }
