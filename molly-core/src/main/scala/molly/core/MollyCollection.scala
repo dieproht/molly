@@ -16,6 +16,7 @@ import com.mongodb.reactivestreams.client.MongoCollection
 import molly.core.model.BulkWriteOptions
 import molly.core.model.CreateIndexOptions
 import molly.core.model.FindOneAndReplaceOptions
+import molly.core.model.FindOneAndUpdateOptions
 import molly.core.model.IndexModel
 import molly.core.model.IndexOptions
 import molly.core.model.ReplaceOptions
@@ -127,11 +128,19 @@ final case class MollyCollection[F[_], A] private[core] (private[core] val deleg
          result         <- resultDoc.traverse(codec.decode)
       } yield result
 
-   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#findOneAndUpdate(com.mongodb.reactivestreams.client.ClientSession,org.bson.conversions.Bson,org.bson.conversions.Bson)]]
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#findOneAndUpdate(org.bson.conversions.Bson,org.bson.conversions.Bson)]]
      */
    def findOneAndUpdate(filter: Bson, update: Bson): F[Option[A]] =
       for {
          resultDoc <- fromOptionPublisher(delegate.findOneAndUpdate(filter, update))
+         result    <- resultDoc.traverse(codec.decode)
+      } yield result
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#findOneAndUpdate(org.bson.conversions.Bson,org.bson.conversions.Bson,com.mongodb.client.model.FindOneAndUpdateOptions)]]
+     */
+   def findOneAndUpdate(filter: Bson, update: Bson, options: FindOneAndUpdateOptions): F[Option[A]] =
+      for {
+         resultDoc <- fromOptionPublisher(delegate.findOneAndUpdate(filter, update, options))
          result    <- resultDoc.traverse(codec.decode)
       } yield result
 

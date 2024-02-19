@@ -46,6 +46,12 @@ object model {
       def apply(): FindOneAndReplaceOptions = new FindOneAndReplaceOptions()
    }
 
+   type FindOneAndUpdateOptions = com.mongodb.client.model.FindOneAndUpdateOptions
+
+   object FindOneAndUpdateOptions {
+      def apply(): FindOneAndUpdateOptions = new FindOneAndUpdateOptions()
+   }
+
    type IndexModel = com.mongodb.client.model.IndexModel
 
    object IndexModel {
