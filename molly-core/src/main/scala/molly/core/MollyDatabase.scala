@@ -10,6 +10,7 @@ import com.mongodb.reactivestreams.client.MongoDatabase
 import org.bson.BsonDocument
 
 import bsondocument.BsonDocumentCollection
+import molly.core.reactivestreams.fromStreamPublisher
 
 /** Molly's counterpart to
   * [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html MongoDatabase]]
@@ -38,6 +39,10 @@ final case class MollyDatabase[F[_]: Async] private[core] (private[core] val del
     codec: MollyCodec[F, A]
    ): Resource[F, MollyCollection[F, A]] =
       Resource.eval(getTypedCollection(collectionName))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#listCollectionNames()]]
+     */
+   def listCollectionNames(): F[List[String]] = fromStreamPublisher(delegate.listCollectionNames(), 1).compile.toList
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getReadConcern()]]
      */
