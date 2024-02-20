@@ -7,10 +7,10 @@ import com.mongodb.ReadConcern
 import com.mongodb.ReadPreference
 import com.mongodb.WriteConcern
 import com.mongodb.reactivestreams.client.MongoDatabase
+import molly.core.reactivestreams.fromStreamPublisher
 import org.bson.BsonDocument
 
 import bsondocument.BsonDocumentCollection
-import molly.core.reactivestreams.fromStreamPublisher
 
 /** Molly's counterpart to
   * [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html MongoDatabase]]
