@@ -28,6 +28,7 @@ import molly.core.query.WatchQuery
 import molly.core.reactivestreams.fromOptionPublisher
 import molly.core.reactivestreams.fromSinglePublisher
 import molly.core.reactivestreams.fromStreamPublisher
+import molly.core.reactivestreams.fromVoidPublisher
 import org.bson.BsonDocument
 import org.bson.Document
 import org.bson.conversions.Bson
@@ -89,6 +90,10 @@ final case class MollyCollection[F[_], A] private[core] (private[core] val deleg
    /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#deleteOne(org.bson.conversions.Bson)]]
      */
    def deleteOne(filter: Bson): F[DeleteResult] = fromSinglePublisher(delegate.deleteOne(filter))
+
+   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#drop()]]
+     */
+   def drop(): F[Unit] = fromVoidPublisher(delegate.drop())
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#estimatedDocumentCount()]]
      */

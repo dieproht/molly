@@ -37,4 +37,14 @@ object reactivestreams {
             override def onSubscribe(sub: Subscription): Unit = sub.request(1)
          })
       )
+
+   def fromVoidPublisher[F[_]: Async](pub: Publisher[Void]): F[Unit] =
+      Async[F].async_((callback: Either[Throwable, Unit] => Unit) =>
+         pub.subscribe(new Subscriber[Void] {
+            override def onComplete(): Unit = callback(Right(()))
+            override def onError(err: Throwable): Unit = callback(Left(err))
+            override def onNext(res: Void): Unit = ()
+            override def onSubscribe(sub: Subscription): Unit = sub.request(1)
+         })
+      )
 }

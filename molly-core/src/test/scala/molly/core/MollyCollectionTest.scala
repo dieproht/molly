@@ -219,6 +219,23 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
       }
    }
 
+   test("drop: remove collection from database") { containers =>
+      withClient(containers) { (client: MollyClient[IO]) =>
+         val doc = new BsonDocument("foo", new BsonString("bar"))
+         for {
+            db        <- client.getDatabase("test-drop")
+            collA     <- db.getCollection("dropA")
+            collB     <- db.getCollection("dropB")
+            _         <- collA.insertOne(doc)
+            _         <- collB.insertOne(doc)
+            _         <- collA.drop()
+            collNames <- db.listCollectionNames()
+         } yield expect(collNames.size == 1)
+            .and(expect(collNames.contains("dropB")))
+            .and(expect(!collNames.contains("dropA")))
+      }
+   }
+
    test("estimatedDocumentCount: estimate document count") { containers =>
       withClient(containers) { (client: MollyClient[IO]) =>
          val doc1 = new BsonDocument("foo", new BsonString("bar"))
