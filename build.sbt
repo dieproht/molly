@@ -13,7 +13,7 @@ ThisBuild / developers :=
    )
 
 ThisBuild / scalaVersion := "3.3.1"
-ThisBuild / crossScalaVersions := Seq("2.13.12", "3.3.1")
+ThisBuild / crossScalaVersions := Seq("2.13.13", "3.3.1")
 
 ThisBuild / semanticdbEnabled := true
 
