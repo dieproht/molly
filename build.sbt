@@ -81,7 +81,7 @@ lazy val molly_medeia = project
       name := "molly-medeia",
       libraryDependencies ++=
          Seq(
-            "de.megaera"    %% "medeia"             % "0.12.0",
+            "de.megaera"    %% "medeia"             % "0.12.1",
             "org.mongodb"    % "bson"               % "4.10.2",
             "org.typelevel" %% "cats-core"          % "2.10.0",
             "org.typelevel" %% "cats-effect-kernel" % "3.5.3",
