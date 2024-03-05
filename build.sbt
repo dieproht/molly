@@ -13,7 +13,7 @@ ThisBuild / developers :=
    )
 
 ThisBuild / scalaVersion := "3.3.1"
-ThisBuild / crossScalaVersions := Seq("2.13.12", "3.3.1")
+ThisBuild / crossScalaVersions := Seq("2.13.13", "3.3.1")
 
 ThisBuild / semanticdbEnabled := true
 
@@ -43,7 +43,10 @@ def commonSettings = Seq(
          case _ =>
             Seq(
                "-Xsource:3",
-               "-Wconf:msg=Seq in package scala has changed semantics:s,msg=constructor modifiers are assumed:s",
+               "-Wconf:msg=Seq in package scala has changed semantics:s," + //
+                  "msg=constructor modifiers are assumed:s," + //
+                  "msg=access modifiers for `copy` method are copied from the case class constructor:s," + //
+                  "msg=access modifiers for `apply` method are copied from the case class constructor:s",
                "-release:17"
             )
       })
