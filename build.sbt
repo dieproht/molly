@@ -73,8 +73,7 @@ lazy val molly_core = project
             "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
             "org.scalatest"       %% "scalatest"                    % "3.2.18" % Test,
             "org.typelevel"       %% "cats-effect"                  % "3.5.3"  % Test
-         ),
-      testFrameworks += new TestFramework("weaver.framework.CatsEffect")
+         )
    )
 
 lazy val molly_medeia = project
@@ -93,8 +92,7 @@ lazy val molly_medeia = project
             "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.3" % Test,
             "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
             "org.typelevel"       %% "cats-effect"                  % "3.5.3"  % Test
-         ),
-      testFrameworks += new TestFramework("weaver.framework.CatsEffect")
+         )
    )
    .dependsOn(molly_core % "compile->compile;test->test")
 
