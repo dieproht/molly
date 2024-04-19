@@ -23,11 +23,13 @@ object ReactivestreamsTest extends SimpleIOSuite {
          subscribers = subscribers :+ s
    }
 
+   private val waitSomeMillis: IO[Unit] = IO.sleep(10.millis)
+
    test("fromSinglePublisher: push value") {
       val pub: TestPublisher[String] = new TestPublisher()
 
       def push(value: String): IO[Unit] =
-         IO.sleep(5.millis) >> // Give 'subscribe' a bit time to complete before
+         waitSomeMillis >> // Give 'subscribe' a bit time to complete before
             IO(pub.next(value)) >>
             IO(pub.complete())
 
@@ -45,7 +47,7 @@ object ReactivestreamsTest extends SimpleIOSuite {
       val pub: TestPublisher[String] = new TestPublisher()
 
       def push(ex: Exception): IO[Unit] =
-         IO.sleep(5.millis) >> // Give 'subscribe' a bit time to complete before
+         waitSomeMillis >> // Give 'subscribe' a bit time to complete before
             IO(pub.error(ex))
 
       val pull: IO[String] = molly.core.reactivestreams.fromSinglePublisher(pub)
@@ -62,7 +64,7 @@ object ReactivestreamsTest extends SimpleIOSuite {
       val pub: TestPublisher[String] = new TestPublisher()
 
       val push: IO[Unit] =
-         IO.sleep(5.millis) >> // Give 'subscribe' a bit time to complete before
+         waitSomeMillis >> // Give 'subscribe' a bit time to complete before
             IO(pub.complete())
 
       val pull: IO[String] = molly.core.reactivestreams.fromSinglePublisher(pub)
@@ -80,7 +82,7 @@ object ReactivestreamsTest extends SimpleIOSuite {
       val pub: TestPublisher[String] = new TestPublisher()
 
       def push(value: String): IO[Unit] =
-         IO.sleep(5.millis) >> // Give 'subscribe' a bit time to complete before
+         waitSomeMillis >> // Give 'subscribe' a bit time to complete before
             IO(pub.next(value)) >>
             IO(pub.complete())
 
@@ -98,7 +100,7 @@ object ReactivestreamsTest extends SimpleIOSuite {
       val pub: TestPublisher[String] = new TestPublisher()
 
       def push(ex: Exception): IO[Unit] =
-         IO.sleep(5.millis) >> // Give 'subscribe' a bit time to complete before
+         waitSomeMillis >> // Give 'subscribe' a bit time to complete before
             IO(pub.error(ex))
 
       val pull: IO[Option[String]] = molly.core.reactivestreams.fromOptionPublisher(pub)
@@ -115,7 +117,7 @@ object ReactivestreamsTest extends SimpleIOSuite {
       val pub: TestPublisher[String] = new TestPublisher()
 
       val push: IO[Unit] =
-         IO.sleep(5.millis) >> // Give 'subscribe' a bit time to complete before
+         waitSomeMillis >> // Give 'subscribe' a bit time to complete before
             IO(pub.complete())
 
       val pull: IO[Option[String]] = molly.core.reactivestreams.fromOptionPublisher(pub)
@@ -131,7 +133,7 @@ object ReactivestreamsTest extends SimpleIOSuite {
       val pub: TestPublisher[Void] = new TestPublisher()
 
       def push: IO[Unit] =
-         IO.sleep(5.millis) >> // Give 'subscribe' a bit time to complete before
+         waitSomeMillis >> // Give 'subscribe' a bit time to complete before
             IO(pub.next(null)) >>
             IO(pub.complete())
 
@@ -148,7 +150,7 @@ object ReactivestreamsTest extends SimpleIOSuite {
       val pub: TestPublisher[Void] = new TestPublisher()
 
       def push(ex: Exception): IO[Unit] =
-         IO.sleep(5.millis) >> // Give 'subscribe' a bit time to complete before
+         waitSomeMillis >> // Give 'subscribe' a bit time to complete before
             IO(pub.error(ex))
 
       val pull: IO[Unit] = molly.core.reactivestreams.fromVoidPublisher(pub)
@@ -165,7 +167,7 @@ object ReactivestreamsTest extends SimpleIOSuite {
       val pub: TestPublisher[Void] = new TestPublisher()
 
       val push: IO[Unit] =
-         IO.sleep(5.millis) >> // Give 'subscribe' a bit time to complete before
+         waitSomeMillis >> // Give 'subscribe' a bit time to complete before
             IO(pub.complete())
 
       val pull: IO[Unit] = molly.core.reactivestreams.fromVoidPublisher(pub)
