@@ -43,8 +43,6 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
       postalCodes = List("24937", "24938", "24939", "24940", "24941", "24942", "24943", "24944")
    )
 
-   override def maxParallelism: Int = 1
-
    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse("mongo:7.0"))
 
    test("deleteMany: delete given documents from collection") { containers =>
