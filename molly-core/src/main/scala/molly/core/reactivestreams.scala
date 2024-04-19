@@ -12,39 +12,54 @@ import org.reactivestreams.Subscription
   */
 object reactivestreams {
 
-   def fromStreamPublisher[F[_]: Async, A](pub: Publisher[A], bufferSize: Int): Stream[F, A] =
-      fs2.interop.reactivestreams.fromPublisher(pub, bufferSize)
+   def fromStreamPublisher[F[_]: Async, A](publisher: Publisher[A], bufferSize: Int): Stream[F, A] =
+      fs2.interop.reactivestreams.fromPublisher(publisher, bufferSize)
 
-   def fromSinglePublisher[F[_]: Async, A](pub: Publisher[A]): F[A] =
-      Async[F].async_((callback: Either[Throwable, A] => Unit) =>
-         pub.subscribe(new Subscriber[A] {
-            private var result: Option[A] = None
-            override def onComplete(): Unit =
-               callback(result.toRight(MollyException("Missing result when completing publisher")))
-            override def onError(err: Throwable): Unit = callback(Left(err))
-            override def onNext(res: A): Unit = result = Option(res)
-            override def onSubscribe(sub: Subscription): Unit = sub.request(1)
-         })
-      )
+   def fromSinglePublisher[F[_]: Async, A](publisher: Publisher[A]): F[A] = {
+      type Callback = Either[Throwable, A] => Unit
+      type Effect = Callback => Unit
+      val effect: Effect = (callback: Callback) =>
+         publisher.subscribe {
+            new Subscriber[A] {
+               private var result: Option[A] = None
+               override def onComplete(): Unit =
+                  callback(result.toRight(MollyException("Missing result when completing fromSinglePublisher")))
+               override def onError(error: Throwable): Unit = callback(Left(error))
+               override def onNext(res: A): Unit = result = Option(res)
+               override def onSubscribe(subscription: Subscription): Unit = subscription.request(1)
+            }
+         }
+      Async[F].async_(effect)
+   }
 
-   def fromOptionPublisher[F[_]: Async, A](pub: Publisher[A]): F[Option[A]] =
-      Async[F].async_((callback: Either[Throwable, Option[A]] => Unit) =>
-         pub.subscribe(new Subscriber[A] {
-            private var result: Option[A] = None
-            override def onComplete(): Unit = callback(Right(result))
-            override def onError(err: Throwable): Unit = callback(Left(err))
-            override def onNext(res: A): Unit = result = Option(res)
-            override def onSubscribe(sub: Subscription): Unit = sub.request(1)
-         })
-      )
+   def fromOptionPublisher[F[_]: Async, A](publisher: Publisher[A]): F[Option[A]] = {
+      type Callback = Either[Throwable, Option[A]] => Unit
+      type Effect = Callback => Unit
+      val effect: Effect = (callback: Callback) =>
+         publisher.subscribe {
+            new Subscriber[A] {
+               private var result: Option[A] = None
+               override def onComplete(): Unit = callback(Right(result))
+               override def onError(error: Throwable): Unit = callback(Left(error))
+               override def onNext(res: A): Unit = result = Option(res)
+               override def onSubscribe(subscription: Subscription): Unit = subscription.request(1)
+            }
+         }
+      Async[F].async_(effect)
+   }
 
-   def fromVoidPublisher[F[_]: Async](pub: Publisher[Void]): F[Unit] =
-      Async[F].async_((callback: Either[Throwable, Unit] => Unit) =>
-         pub.subscribe(new Subscriber[Void] {
-            override def onComplete(): Unit = callback(Right(()))
-            override def onError(err: Throwable): Unit = callback(Left(err))
-            override def onNext(res: Void): Unit = ()
-            override def onSubscribe(sub: Subscription): Unit = sub.request(1)
-         })
-      )
+   def fromVoidPublisher[F[_]: Async](publisher: Publisher[Void]): F[Unit] = {
+      type Callback = Either[Throwable, Unit] => Unit
+      type Effect = Callback => Unit
+      val effect: Effect = (callback: Callback) =>
+         publisher.subscribe {
+            new Subscriber[Void] {
+               override def onComplete(): Unit = callback(Right(()))
+               override def onError(error: Throwable): Unit = callback(Left(error))
+               override def onNext(res: Void): Unit = ()
+               override def onSubscribe(subscription: Subscription): Unit = subscription.request(1)
+            }
+         }
+      Async[F].async_(effect)
+   }
 }
