@@ -32,8 +32,6 @@ import scala.concurrent.duration.*
 
 object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport {
 
-   override def maxParallelism: Int = 1
-
    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse("mongo:7.0"))
 
    test("aggregate: perform aggregation pipeline on empty collection") { containers =>
