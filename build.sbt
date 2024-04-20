@@ -61,14 +61,14 @@ lazy val molly_core = project
          Seq(
             "co.fs2"             %% "fs2-core"                       % "3.10.2",
             "co.fs2"             %% "fs2-reactive-streams"           % "3.10.2",
-            "org.mongodb"         % "bson"                           % "5.0.0",
-            "org.mongodb"         % "mongodb-driver-core"            % "5.0.0",
-            "org.mongodb"         % "mongodb-driver-reactivestreams" % "5.0.0",
+            "org.mongodb"         % "bson"                           % "5.0.1",
+            "org.mongodb"         % "mongodb-driver-core"            % "5.0.1",
+            "org.mongodb"         % "mongodb-driver-reactivestreams" % "5.0.1",
             "org.reactivestreams" % "reactive-streams"               % "1.0.4",
             "org.typelevel"      %% "cats-core"                      % "2.10.0",
             "org.typelevel"      %% "cats-effect-kernel"             % "3.5.4",
             //
-            "ch.qos.logback"       % "logback-classic"              % "1.5.3"  % Test,
+            "ch.qos.logback"       % "logback-classic"              % "1.5.6"  % Test,
             "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.3" % Test,
             "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
             "org.scalatest"       %% "scalatest"                    % "3.2.18" % Test,
@@ -88,7 +88,7 @@ lazy val molly_medeia = project
             "org.typelevel" %% "cats-core"          % "2.10.0",
             "org.typelevel" %% "cats-effect-kernel" % "3.5.4",
             //
-            "ch.qos.logback"       % "logback-classic"              % "1.5.3"  % Test,
+            "ch.qos.logback"       % "logback-classic"              % "1.5.6"  % Test,
             "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.3" % Test,
             "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
             "org.typelevel"       %% "cats-effect"                  % "3.5.4"  % Test
