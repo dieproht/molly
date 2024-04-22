@@ -23,7 +23,7 @@ object ReactivestreamsTest extends SimpleIOSuite {
          subscribers = subscribers :+ s
    }
 
-   private val waitSomeMillis: IO[Unit] = IO.sleep(10.millis)
+   private val waitSomeMillis: IO[Unit] = IO.sleep(15.millis)
 
    test("fromSinglePublisher: push value") {
       val pub: TestPublisher[String] = new TestPublisher()
