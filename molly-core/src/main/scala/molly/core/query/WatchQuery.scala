@@ -1,14 +1,15 @@
 package molly.core.query
 
 import cats.effect.kernel.Async
-import cats.syntax.flatMap.*
-import cats.syntax.functor.*
-import cats.syntax.traverse.*
+import cats.syntax.flatMap._
+import cats.syntax.functor._
+import cats.syntax.traverse._
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
 import com.mongodb.reactivestreams.client.ChangeStreamPublisher
 import fs2.Stream
 import molly.core.MollyCodec
+import molly.core.query.WatchQuery.decodeChangeStreamDocument
 import molly.core.reactivestreams.fromStreamPublisher
 import org.bson.BsonDocument
 
@@ -35,24 +36,32 @@ final case class WatchQuery[F[_], A] private[core] (
 
    def stream(bufferSize: Int = 16): Stream[F, ChangeStreamDocument[A]] =
       fromStreamPublisher(publisher, bufferSize).evalMap { csd =>
-         for {
-            fd   <- Option(csd.getFullDocument).traverse(codec.decode)
-            fdbc <- Option(csd.getFullDocumentBeforeChange).traverse(codec.decode)
-         } yield new ChangeStreamDocument(
-            csd.getOperationTypeString,
-            csd.getResumeToken,
-            csd.getNamespaceDocument,
-            csd.getDestinationNamespaceDocument,
-            fd.getOrElse(null.asInstanceOf[A]),
-            fdbc.getOrElse(null.asInstanceOf[A]),
-            csd.getDocumentKey,
-            csd.getClusterTime,
-            csd.getUpdateDescription,
-            csd.getTxnNumber,
-            csd.getLsid,
-            csd.getWallTime,
-            csd.getSplitEvent,
-            csd.getExtraElements
-         )
+         decodeChangeStreamDocument(csd)
       }
+}
+
+object WatchQuery {
+   def decodeChangeStreamDocument[F[_], A](csd: ChangeStreamDocument[BsonDocument])(implicit
+    f: Async[F],
+    codec: MollyCodec[F, A]
+   ): F[ChangeStreamDocument[A]] =
+      for {
+         fd   <- Option(csd.getFullDocument).traverse(codec.decode)
+         fdbc <- Option(csd.getFullDocumentBeforeChange).traverse(codec.decode)
+      } yield new ChangeStreamDocument(
+         csd.getOperationTypeString,
+         csd.getResumeToken,
+         csd.getNamespaceDocument,
+         csd.getDestinationNamespaceDocument,
+         fd.getOrElse(null.asInstanceOf[A]),
+         fdbc.getOrElse(null.asInstanceOf[A]),
+         csd.getDocumentKey,
+         csd.getClusterTime,
+         csd.getUpdateDescription,
+         csd.getTxnNumber,
+         csd.getLsid,
+         csd.getWallTime,
+         csd.getSplitEvent,
+         csd.getExtraElements
+      )
 }
