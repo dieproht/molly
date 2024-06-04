@@ -52,7 +52,7 @@ lazy val molly_core = project
         "org.mongodb"         % "mongodb-driver-reactivestreams" % "5.1.0",
         "org.mongodb"         % "mongodb-driver-sync"            % "5.1.0",
         "org.reactivestreams" % "reactive-streams"               % "1.0.4",
-        "org.typelevel"      %% "cats-core"                      % "2.10.0",
+        "org.typelevel"      %% "cats-core"                      % "2.12.0",
         "org.typelevel"      %% "cats-effect-kernel"             % "3.5.4",
         //
         "ch.qos.logback"       % "logback-classic"              % "1.5.6"  % Test,
@@ -72,7 +72,7 @@ lazy val molly_medeia = project
       Seq(
         "de.megaera"    %% "medeia"             % "0.12.2",
         "org.mongodb"    % "bson"               % "4.11.2",
-        "org.typelevel" %% "cats-core"          % "2.10.0",
+        "org.typelevel" %% "cats-core"          % "2.12.0",
         "org.typelevel" %% "cats-effect-kernel" % "3.5.4",
         //
         "ch.qos.logback"       % "logback-classic"              % "1.5.6"  % Test,
