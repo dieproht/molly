@@ -13,11 +13,11 @@ import org.bson.BsonDocument
 import bsondocument.BsonDocumentCollection
 
 /** Molly's counterpart to
-  * [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html MongoDatabase]]
+  * [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html MongoDatabase]]
   */
 final case class MollyDatabase[F[_]: Async] private[core] (private[core] val delegate: MongoDatabase) {
 
-   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getCollection(java.lang.String)]]
+   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getCollection(java.lang.String)]]
      */
    def getCollection(collectionName: String): F[BsonDocumentCollection[F]] = {
       import bsondocument.bsonDocumentCodec
@@ -43,33 +43,33 @@ final case class MollyDatabase[F[_]: Async] private[core] (private[core] val del
    ): Resource[F, MollyCollection[F, A]] =
       Resource.eval(getTypedCollection(collectionName))
 
-   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#listCollectionNames()]]
+   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#listCollectionNames()]]
      */
    def listCollectionNames(): F[List[String]] = fromStreamPublisher(delegate.listCollectionNames(), 1).compile.toList
 
-   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getReadConcern()]]
+   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getReadConcern()]]
      */
    def getReadConcern(): ReadConcern = delegate.getReadConcern()
 
-   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getReadPreference()]]
+   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getReadPreference()]]
      */
    def getReadPreference(): ReadPreference = delegate.getReadPreference()
 
-   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getWriteConcern()]]
+   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getWriteConcern()]]
      */
    def getWriteConcern(): WriteConcern = delegate.getWriteConcern()
 
-   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#withReadConcern(com.mongodb.ReadConcern)]]
+   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#withReadConcern(com.mongodb.ReadConcern)]]
      */
    def withReadConcern(readConcern: ReadConcern): MollyDatabase[F] =
       MollyDatabase(delegate.withReadConcern(readConcern))
 
-   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#withReadPreference(com.mongodb.ReadPreference]]
+   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#withReadPreference(com.mongodb.ReadPreference]]
      */
    def withReadPreference(readPreference: ReadPreference): MollyDatabase[F] =
       MollyDatabase(delegate.withReadPreference(readPreference))
 
-   /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#withWriteConcern(com.mongodb.WriteConcern)]]
+   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#withWriteConcern(com.mongodb.WriteConcern)]]
      */
    def withWriteConcern(writeConcern: WriteConcern): MollyDatabase[F] =
       MollyDatabase(delegate.withWriteConcern(writeConcern))
