@@ -9,13 +9,11 @@ import org.bson.BsonDocument
   * [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-sync/com/mongodb/client/MongoCollection.html MongoCollection]].
   */
 final case class MollySyncCollection[F[_], A] private[core] (private[core] val delegate: MongoCollection[BsonDocument])(
- implicit
- f: Async[F],
- codec: MollyCodec[F, A]
-) {
+    using
+    Async[F],
+    MollyCodec[F, A]
+):
 
-   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-sync/com/mongodb/client/MongoCollection.html#watch()]]
-     */
-   def watch(): SyncWatchQuery[F, A] = SyncWatchQuery(delegate.watch(classOf[BsonDocument]))
-
-}
+  /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-sync/com/mongodb/client/MongoCollection.html#watch()]]
+    */
+  def watch(): SyncWatchQuery[F, A] = SyncWatchQuery(delegate.watch(classOf[BsonDocument]))
