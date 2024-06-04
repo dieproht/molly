@@ -7,12 +7,12 @@ import weaver.MutableFSuite
 
 /** This integrates weaver-test with testcontainers-scala.
   */
-trait TestContainerForAll[F[_]] { self: MutableFSuite[F] =>
+trait TestContainerForAll[F[_]](using f: Sync[F]):
+  self: MutableFSuite[F] =>
 
-   val containerDef: ContainerDef
+  val containerDef: ContainerDef
 
-   final override type Res = containerDef.Container
+  final override type Res = containerDef.Container
 
-   final override def sharedResource: Resource[F, Res] =
-      Resource.make(Sync[F].blocking(containerDef.start()))(c => Sync[F].blocking(c.stop()))
-}
+  final override def sharedResource: Resource[F, Res] =
+    Resource.make(f.blocking(containerDef.start()))(c => f.blocking(c.stop()))
