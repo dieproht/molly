@@ -1,9 +1,9 @@
 package molly.core
 
 import cats.effect.kernel.Async
-import cats.syntax.flatMap.*
-import cats.syntax.functor.*
-import cats.syntax.traverse.*
+import cats.syntax.flatMap._
+import cats.syntax.functor._
+import cats.syntax.traverse._
 import com.mongodb.ReadConcern
 import com.mongodb.ReadPreference
 import com.mongodb.WriteConcern
@@ -34,7 +34,7 @@ import org.bson.Document
 import org.bson.conversions.Bson
 
 import java.lang
-import scala.jdk.CollectionConverters.*
+import scala.jdk.CollectionConverters._
 
 /** Molly's counterpart to
   * [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html MongoCollection]].
@@ -213,6 +213,9 @@ final case class MollyCollection[F[_], A] private[core] (private[core] val deleg
    )
 
    /** [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#watch()]]
+     *
+     * If blocking finalization of the stream is causing you problems, try using the
+     * [[molly.core.MollySyncCollection#watch()]].
      */
    def watch(): WatchQuery[F, A] = WatchQuery(delegate.watch(classOf[BsonDocument]))
 

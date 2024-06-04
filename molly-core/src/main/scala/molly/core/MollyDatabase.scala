@@ -2,7 +2,7 @@ package molly.core
 
 import cats.effect.kernel.Async
 import cats.effect.kernel.Resource
-import cats.syntax.functor.*
+import cats.syntax.functor._
 import com.mongodb.ReadConcern
 import com.mongodb.ReadPreference
 import com.mongodb.WriteConcern
@@ -14,8 +14,6 @@ import bsondocument.BsonDocumentCollection
 
 /** Molly's counterpart to
   * [[https://mongodb.github.io/mongo-java-driver/4.11/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html MongoDatabase]]
-  *
-  * @param delegate
   */
 final case class MollyDatabase[F[_]: Async] private[core] (private[core] val delegate: MongoDatabase) {
 
@@ -32,9 +30,14 @@ final case class MollyDatabase[F[_]: Async] private[core] (private[core] val del
    def getCollectionAsResource(collectionName: String): Resource[F, BsonDocumentCollection[F]] =
       Resource.eval(getCollection(collectionName))
 
+   /** Like [[this.getCollection]], but maps documents to type a using the given codec.
+     */
    def getTypedCollection[A](collectionName: String)(implicit codec: MollyCodec[F, A]): F[MollyCollection[F, A]] =
       Async[F].delay(delegate.getCollection(collectionName, classOf[BsonDocument])).map(MollyCollection[F, A](_))
 
+   /** Like [[this.getTypedCollection]], but returns a
+     * [[https://typelevel.org/cats-effect/api/3.x/cats/effect/kernel/Resource.html Resource]]
+     */
    def getTypedCollectionAsResource[A](collectionName: String)(implicit
     codec: MollyCodec[F, A]
    ): Resource[F, MollyCollection[F, A]] =
