@@ -13,7 +13,6 @@ ThisBuild / developers :=
    )
 
 ThisBuild / scalaVersion := "3.3.3"
-ThisBuild / crossScalaVersions := Seq("2.13.13", "3.3.3")
 
 ThisBuild / semanticdbEnabled := true
 
@@ -25,31 +24,18 @@ sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 def commonSettings = Seq(
    sonatypeCredentialHost := "s01.oss.sonatype.org",
    sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
-   scalacOptions ++=
-      (CrossVersion.partialVersion(scalaVersion.value) match {
-         case Some((3, _)) =>
-            Seq(
-               "-encoding",
-               "UTF-8",
-               "-explain",
-               "-explain-types",
-               "-deprecation",
-               "-feature",
-               "-unchecked",
-               "-source:3.3",
-               "-release:17",
-               "-Wunused:all"
-            )
-         case _ =>
-            Seq(
-               "-Xsource:3",
-               "-Wconf:msg=Seq in package scala has changed semantics:s," + //
-                  "msg=constructor modifiers are assumed:s," + //
-                  "msg=access modifiers for `copy` method are copied from the case class constructor:s," + //
-                  "msg=access modifiers for `apply` method are copied from the case class constructor:s",
-               "-release:17"
-            )
-      })
+   scalacOptions ++= Seq(
+      "-encoding",
+      "UTF-8",
+      "-explain",
+      "-explain-types",
+      "-deprecation",
+      "-feature",
+      "-unchecked",
+      "-source:3.3",
+      "-release:17",
+      "-Wunused:all"
+   )
 )
 
 lazy val molly_core = project
