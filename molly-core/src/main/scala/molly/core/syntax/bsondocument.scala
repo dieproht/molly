@@ -1,6 +1,7 @@
 package molly.core.syntax
 
-import org.bson.*
+import molly.core.MollyCollection
+import org.bson.BsonValue
 
 import scala.reflect.ClassTag
 import scala.reflect.classTag
@@ -8,9 +9,28 @@ import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 
-/** Syntax extensions for [[org.bson.BsonDocument the Java driver's BsonDocument class]].
+/** Syntactic sugar for [[org.bson.BsonDocument the Java driver's BsonDocument class]].
   */
 trait bsondocument:
+
+  type BsonDocumentCollection[F[_]] = MollyCollection[F, BsonDocument]
+
+  type BsonDocument = org.bson.BsonDocument
+
+  object BsonDocument:
+    def apply(): BsonDocument = new BsonDocument()
+
+    def apply(key: String, value: BsonValue) = new BsonDocument(key, value)
+
+    def apply(elems: Iterable[(String, BsonValue)]): BsonDocument =
+      val bsonDoc = new BsonDocument()
+      elems.foreach(e => bsonDoc.put(e._1, e._2))
+      bsonDoc
+
+    def apply(elems: (String, BsonValue)*): BsonDocument =
+      val bsonDoc = new BsonDocument()
+      elems.foreach(e => bsonDoc.put(e._1, e._2))
+      bsonDoc
 
   extension (bsonDoc: BsonDocument)
 
