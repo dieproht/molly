@@ -20,7 +20,6 @@ final case class MollySyncDatabase[F[_]] private[core] (private[core] val delega
   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-sync/com/mongodb/client/MongoDatabase.html#getCollection(java.lang.String)]]
     */
   def getCollection(collectionName: String): F[MollySyncCollection[F, BsonDocument]] =
-    import bsondocument.bsonDocumentCodec
     f.delay(delegate.getCollection(collectionName, classOf[BsonDocument])).map(MollySyncCollection(_))
 
   /** Like [[this.getCollection]], but returns a

@@ -1,8 +1,7 @@
 package molly.core.syntax
 
 import cats.syntax.option.*
-import molly.core.bson.*
-import molly.core.bsondocument.BsonDocument
+import molly.core.syntax.bson.*
 import molly.core.syntax.bsondocument.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

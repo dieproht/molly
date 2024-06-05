@@ -1,10 +1,10 @@
 package molly.core
 
-import molly.core.bson.BsonDateTime
-import molly.core.bson.BsonDouble
-import molly.core.bson.BsonInt32
-import molly.core.bson.BsonString
-import molly.core.bsondocument.BsonDocument
+import molly.core.syntax.bson.BsonDateTime
+import molly.core.syntax.bson.BsonDouble
+import molly.core.syntax.bson.BsonInt32
+import molly.core.syntax.bson.BsonString
+import molly.core.syntax.bsondocument.BsonDocument
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 

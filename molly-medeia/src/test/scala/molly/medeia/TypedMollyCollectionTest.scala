@@ -11,8 +11,8 @@ import molly.core.MollyClient
 import molly.core.MollyCollection
 import molly.core.MollyTestSupport
 import molly.core.TestContainerForAll
-import molly.core.model.FindOneAndReplaceOptions
-import molly.core.model.ReplaceOptions
+import molly.core.syntax.model.FindOneAndReplaceOptions
+import molly.core.syntax.model.ReplaceOptions
 import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
 

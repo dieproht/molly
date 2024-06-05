@@ -7,8 +7,8 @@ import com.mongodb.ReadConcern
 import com.mongodb.ReadPreference
 import com.mongodb.WriteConcern
 import com.mongodb.reactivestreams.client.MongoDatabase
-import molly.core.bsondocument.BsonDocumentCollection
 import molly.core.reactivestreams.fromStreamPublisher
+import molly.core.syntax.bsondocument.BsonDocumentCollection
 import org.bson.BsonDocument
 
 /** Molly's counterpart to
@@ -19,7 +19,6 @@ final case class MollyDatabase[F[_]] private[core] (private[core] val delegate: 
   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoDatabase.html#getCollection(java.lang.String)]]
     */
   def getCollection(collectionName: String): F[BsonDocumentCollection[F]] =
-    import bsondocument.bsonDocumentCodec
     f.delay(delegate.getCollection(collectionName, classOf[BsonDocument])).map(MollyCollection(_))
 
   /** Like [[this.getCollection]], but returns a

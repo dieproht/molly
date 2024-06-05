@@ -4,7 +4,7 @@ import cats.effect.IO
 import com.dimafeng.testcontainers.MongoDBContainer
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
-import molly.core.bsondocument.BsonDocumentCollection
+import molly.core.syntax.bsondocument.BsonDocumentCollection
 import org.bson.BsonDocument
 import org.bson.BsonInt32
 import org.testcontainers.utility.DockerImageName

@@ -1,3 +1,3 @@
 package molly.core.syntax
 
-object all extends bsondocument with filters
+object all extends bson, bsondocument, filters, model

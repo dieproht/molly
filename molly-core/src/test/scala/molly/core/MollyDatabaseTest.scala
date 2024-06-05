@@ -2,8 +2,8 @@ package molly.core
 
 import cats.effect.IO
 import com.dimafeng.testcontainers.MongoDBContainer
-import molly.core.bson.*
-import molly.core.bsondocument.*
+import molly.core.syntax.bson.*
+import molly.core.syntax.bsondocument.*
 import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
 
