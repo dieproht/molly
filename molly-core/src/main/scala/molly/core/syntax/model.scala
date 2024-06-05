@@ -1,12 +1,12 @@
-package molly.core
+package molly.core.syntax
 
 import org.bson.BsonDocument
 import org.bson.conversions.Bson
 
-/** Convenience layer over
+/** Syntactic sugar for
   * [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-core/com/mongodb/client/model/package-summary.html the Java driver's model classes]].
   */
-object model:
+trait model:
 
   type BulkWriteOptions = com.mongodb.client.model.BulkWriteOptions
 
@@ -93,3 +93,5 @@ object model:
     def apply(): UpdateOptions = new UpdateOptions()
 
   type WriteModel = com.mongodb.client.model.WriteModel[BsonDocument]
+
+object model extends model

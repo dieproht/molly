@@ -1,11 +1,11 @@
-package molly.core
+package molly.core.syntax
 
 import scala.jdk.CollectionConverters.*
 
-/** Convenience layer over [[org.bson.conversions.Bson the Java driver's Bson class]].
+/** Syntactic sugar for
+  * [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/bson/org/bson/package-summary.html the Java driver's bson classes]].
   */
-
-object bson:
+trait bson:
   type BsonArray = org.bson.BsonArray
 
   type BsonValue = org.bson.BsonValue
@@ -107,3 +107,5 @@ object bson:
   object BsonUndefined:
 
     def apply(): BsonUndefined = new BsonUndefined()
+
+object bson extends bson
