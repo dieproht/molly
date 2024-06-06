@@ -23,10 +23,6 @@ final case class WatchQuery[F[_], A] private[core] (private[core] val publisher:
     */
   def resumeAfter(resumeToken: BsonDocument): WatchQuery[F, A] = WatchQuery(publisher.resumeAfter(resumeToken))
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#batchSize(int)]]
-    */
-  def batchSize(batchSize: Int): WatchQuery[F, A] = WatchQuery(publisher.batchSize(batchSize))
-
   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#fullDocument(com.mongodb.client.model.changestream.FullDocument)]]
     */
   def fullDocument(fullDocument: FullDocument): WatchQuery[F, A] = WatchQuery(publisher.fullDocument(fullDocument))
@@ -34,7 +30,7 @@ final case class WatchQuery[F[_], A] private[core] (private[core] val publisher:
   def list(bufferSize: Int = 16): F[List[ChangeStreamDocument[A]]] = stream(bufferSize).compile.toList
 
   def stream(bufferSize: Int = 16): Stream[F, ChangeStreamDocument[A]] =
-    fromStreamPublisher(publisher, bufferSize)
+    fromStreamPublisher(publisher.batchSize(bufferSize), bufferSize)
       .evalMap: csd =>
         decodeChangeStreamDocument(csd)
 
