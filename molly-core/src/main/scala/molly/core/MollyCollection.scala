@@ -21,6 +21,7 @@ import molly.core.reactivestreams.fromSinglePublisher
 import molly.core.reactivestreams.fromStreamPublisher
 import molly.core.reactivestreams.fromVoidPublisher
 import molly.core.syntax.model.BulkWriteOptions
+import molly.core.syntax.model.CountOptions
 import molly.core.syntax.model.CreateIndexOptions
 import molly.core.syntax.model.FindOneAndReplaceOptions
 import molly.core.syntax.model.FindOneAndUpdateOptions
@@ -63,6 +64,11 @@ final case class MollyCollection[F[_], A] private[core] (private[core] val deleg
   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#countDocuments(org.bson.conversions.Bson)]]
     */
   def countDocuments(filter: Bson): F[Long] = fromSinglePublisher(delegate.countDocuments(filter)).map(_.toLong)
+
+  /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#countDocuments(org.bson.conversions.Bson,com.mongodb.client.model.CountOptions)]]
+    */
+  def countDocuments(filter: Bson, options: CountOptions): F[Long] =
+    fromSinglePublisher(delegate.countDocuments(filter, options)).map(_.toLong)
 
   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#createIndex(org.bson.conversions.Bson)]]
     */
