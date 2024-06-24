@@ -11,6 +11,7 @@ import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Sorts
 import com.mongodb.client.model.Updates
 import molly.core.syntax.bsondocument.BsonDocumentCollection
+import molly.core.syntax.model.CountOptions
 import molly.core.syntax.model.CreateIndexOptions
 import molly.core.syntax.model.DeleteOneModel
 import molly.core.syntax.model.FindOneAndReplaceOptions
@@ -111,6 +112,18 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
         _     <- coll.insertMany(Seq(doc1, doc2, doc3))
         count <- coll.countDocuments(Filters.regex("foo", "bar.*"))
       yield expect(count == 2L)
+
+  test("countDocuments: count documents given a filter and options"): containers =>
+    withClient(containers): (client: MollyClient[IO]) =>
+      val doc1 = new BsonDocument("foo", new BsonString("bar"))
+      val doc2 = new BsonDocument("foo", new BsonString("baz"))
+      val doc3 = new BsonDocument("foo", new BsonString("barry"))
+      for
+        db    <- client.getDatabase("test")
+        coll  <- db.getCollection("countDocuments2")
+        _     <- coll.insertMany(Seq(doc1, doc2, doc3))
+        count <- coll.countDocuments(Filters.regex("foo", "bar.*"), CountOptions().limit(1))
+      yield expect(count == 1L)
 
   test("create and list index"): containers =>
     withClient(containers): (client: MollyClient[IO]) =>
