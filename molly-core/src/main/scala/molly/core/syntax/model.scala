@@ -13,6 +13,11 @@ trait model:
   object BulkWriteOptions:
     def apply(): BulkWriteOptions = new BulkWriteOptions()
 
+  type CountOptions = com.mongodb.client.model.CountOptions
+
+  object CountOptions:
+    def apply(): CountOptions = new CountOptions()
+
   type CreateIndexOptions = com.mongodb.client.model.CreateIndexOptions
 
   object CreateIndexOptions:
