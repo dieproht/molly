@@ -3,13 +3,10 @@ package molly.core.query
 import cats.effect.kernel.Async
 import cats.effect.kernel.Sync
 import cats.effect.syntax.spawn.*
-import cats.syntax.flatMap.*
-import cats.syntax.functor.*
 import com.mongodb.client.ChangeStreamIterable
 import com.mongodb.client.MongoChangeStreamCursor
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
-import fs2.Chunk
 import fs2.Stream
 import molly.core.MollyCodec
 import org.bson.BsonDocument
@@ -42,20 +39,12 @@ final case class SyncWatchQuery[F[_], A] private[core] (private[core] val iterab
   private type Cursor = MongoChangeStreamCursor[ChangeStreamDocument[BsonDocument]]
 
   private def fromCursor(cursor: Cursor, bufferSize: Int, timeout: FiniteDuration): Stream[F, ChangeStreamDocument[A]] =
-    def getNextChunk(cursor: Cursor): F[Option[(Chunk[ChangeStreamDocument[BsonDocument]], Cursor)]] =
-      val buffer = Vector.newBuilder[ChangeStreamDocument[BsonDocument]]
-      f.race(
-        f
-          .suspend(Sync.Type.Blocking):
-            var count = 0
-            while count < bufferSize && cursor.hasNext do
-              buffer += cursor.next()
-              count += 1
-            if count == 0 then None else Some((Chunk.from(buffer.result()), cursor))
-          .cancelable(f.delay(cursor.close())),
-        f.sleep(timeout) >> f.delay(Some((Chunk.from(buffer.result()), cursor)))
-      ).map(_.fold(identity, identity))
+    def getNext(cursor: Cursor): F[Option[(ChangeStreamDocument[BsonDocument], Cursor)]] =
+      f.suspend(Sync.Type.Blocking)(if cursor.hasNext() then Some(cursor.next() -> cursor) else None)
+        .cancelable(f.delay(cursor.close()))
 
     Stream
-      .unfoldChunkEval(cursor)(getNextChunk)
+      .unfoldEval(cursor)(getNext)
       .evalMap(WatchQuery.decodeChangeStreamDocument)
+      .groupWithin(bufferSize, timeout)
+      .flatMap(Stream.chunk)
