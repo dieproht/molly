@@ -625,6 +625,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
         .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(2)))))
         .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(3)))))
         .and(expect(csDocs.forall(_.getOperationTypeString() == "insert")))
+        .and(expect(csDocs.forall(_.getFullDocument() != null)))
 
   test("watch: return different changes"): containers =>
     withClient(containers): (client: MollyClient[IO]) =>
@@ -651,6 +652,25 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
         .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(3)))))
         .and(expect(csDocs.take(3).forall(_.getOperationTypeString() == "insert")))
         .and(expect(csDocs.last.getOperationTypeString() == "update"))
+
+  test("watch: return one change per inserted document with aggregation applied"): containers =>
+    withClient(containers): (client: MollyClient[IO]) =>
+      val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("x", new BsonInt32(47))
+      val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("x", new BsonInt32(20))
+      val doc3 = new BsonDocument("_id", new BsonInt32(3)).append("x", new BsonInt32(99))
+
+      val pipe = Seq(Aggregates.project(Projections.exclude("fullDocument")))
+
+      def runChangeStream(coll: BsonDocumentCollection[IO]) =
+        coll.watch(pipe).stream(bufferSize = 1).take(3).compile.toList
+
+      def insert(coll: BsonDocumentCollection[IO]) = IO.sleep(eta) >> coll.insertMany(Seq(doc1, doc2, doc3))
+
+      for
+        db     <- client.getDatabase("test")
+        coll   <- db.getCollection("watch3")
+        csDocs <- runChangeStream(coll).both(insert(coll)).map(_._1)
+      yield expect(csDocs.size == 3).and(expect(csDocs.forall(_.getFullDocument() == null)))
 
   test("propagate errors from underlying driver"): containers =>
     withClient(containers): (client: MollyClient[IO]) =>
