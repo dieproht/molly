@@ -2,7 +2,9 @@ package molly.core
 
 import cats.effect.IO
 import com.dimafeng.testcontainers.MongoDBContainer
+import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Projections
 import com.mongodb.client.model.Updates
 import molly.core.syntax.bsondocument.BsonDocumentCollection
 import org.bson.BsonDocument
@@ -41,6 +43,7 @@ object MollySyncCollectionTest extends IOSuite with TestContainerForAll[IO] with
           .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(2)))))
           .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(3)))))
           .and(expect(csDocs.forall(_.getOperationTypeString() == "insert")))
+          .and(expect(csDocs.forall(_.getFullDocument() != null)))
 
   test("watch: return one change per inserted document with buffer size greater than result size"): containers =>
     withClient(containers): (client: MollyClient[IO]) =>
@@ -94,3 +97,25 @@ object MollySyncCollectionTest extends IOSuite with TestContainerForAll[IO] with
           .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(3)))))
           .and(expect(csDocs.take(3).forall(_.getOperationTypeString() == "insert")))
           .and(expect(csDocs.last.getOperationTypeString() == "update"))
+
+  test("watch: return one change per inserted document with aggregation applied"): containers =>
+    withClient(containers): (client: MollyClient[IO]) =>
+      withSyncClient(containers): (syncClient: MollySyncClient[IO]) =>
+        val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("x", new BsonInt32(47))
+        val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("x", new BsonInt32(20))
+        val doc3 = new BsonDocument("_id", new BsonInt32(3)).append("x", new BsonInt32(99))
+
+        val pipe = Seq(Aggregates.project(Projections.exclude("fullDocument")))
+
+        def runChangeStream(coll: MollySyncCollection[IO, BsonDocument]) =
+          coll.watch(pipe).stream(bufferSize = 1).take(3).compile.toList
+
+        def insert(coll: BsonDocumentCollection[IO]) = IO.sleep(eta) >> coll.insertMany(Seq(doc1, doc2, doc3))
+
+        for
+          db       <- client.getDatabase("test")
+          syncDb   <- syncClient.getDatabase("test")
+          coll     <- db.getCollection("watch4")
+          syncColl <- syncDb.getCollection("watch4")
+          csDocs   <- runChangeStream(syncColl).both(insert(coll)).map(_._1)
+        yield expect(csDocs.size == 3).and(expect(csDocs.forall(_.getFullDocument() == null)))

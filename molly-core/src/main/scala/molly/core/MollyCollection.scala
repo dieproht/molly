@@ -225,6 +225,13 @@ final case class MollyCollection[F[_], A] private[core] (private[core] val deleg
     */
   def watch(): WatchQuery[F, A] = WatchQuery(delegate.watch(classOf[BsonDocument]))
 
+  /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#watch(java.util.List)]]
+    *
+    * If blocking finalization of the stream is causing you problems, try using the
+    * [[molly.core.MollySyncCollection#watch(scala.collection.immutable.Seq)]].
+    */
+  def watch(pipeline: Seq[Bson]): WatchQuery[F, A] = WatchQuery(delegate.watch(pipeline.asJava, classOf[BsonDocument]))
+
   /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoCollection.html#withReadConcern(com.mongodb.ReadConcern)]]
     */
   def withReadConcern(readConcern: ReadConcern): MollyCollection[F, A] =
