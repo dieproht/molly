@@ -1,7 +1,6 @@
 package molly.core.query
 
 import cats.effect.kernel.Async
-import cats.effect.kernel.Sync
 import cats.effect.syntax.spawn.*
 import com.mongodb.client.ChangeStreamIterable
 import com.mongodb.client.MongoChangeStreamCursor
@@ -33,15 +32,15 @@ final case class SyncWatchQuery[F[_], A] private[core] (private[core] val iterab
 
   def stream(bufferSize: Int = 16, timeout: FiniteDuration = 10.seconds): Stream[F, ChangeStreamDocument[A]] =
     Stream
-      .bracket(f.delay(iterable.batchSize(bufferSize).cursor()))(cursor => f.delay(cursor.close()))
+      .bracket(f.blocking(iterable.batchSize(bufferSize).cursor()))(cursor => f.blocking(cursor.close()))
       .flatMap(fromCursor(_, bufferSize, timeout))
 
   private type Cursor = MongoChangeStreamCursor[ChangeStreamDocument[BsonDocument]]
 
   private def fromCursor(cursor: Cursor, bufferSize: Int, timeout: FiniteDuration): Stream[F, ChangeStreamDocument[A]] =
     def getNext(cursor: Cursor): F[Option[(ChangeStreamDocument[BsonDocument], Cursor)]] =
-      f.suspend(Sync.Type.Blocking)(if cursor.hasNext() then Some(cursor.next() -> cursor) else None)
-        .cancelable(f.delay(cursor.close()))
+      f.blocking(if cursor.hasNext() then Some(cursor.next() -> cursor) else None)
+        .cancelable(f.blocking(cursor.close()))
 
     Stream
       .unfoldEval(cursor)(getNext)
