@@ -45,8 +45,8 @@ lazy val molly_core = project
     name := "molly-core",
     libraryDependencies ++=
       Seq(
-        "co.fs2"             %% "fs2-core"                       % "3.10.2",
-        "co.fs2"             %% "fs2-reactive-streams"           % "3.10.2",
+        "co.fs2"             %% "fs2-core"                       % "3.11.0",
+        "co.fs2"             %% "fs2-reactive-streams"           % "3.11.0",
         "org.mongodb"         % "bson"                           % "5.1.2",
         "org.mongodb"         % "mongodb-driver-core"            % "5.1.2",
         "org.mongodb"         % "mongodb-driver-reactivestreams" % "5.1.2",
