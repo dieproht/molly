@@ -18,11 +18,11 @@ final case class SyncWatchQuery[F[_], A] private[core] (private[core] val iterab
     codec: MollyCodec[F, A]
 ):
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#resumeAfter(org.bson.BsonDocument)]]
+  /** [[https://mongodb.github.io/mongo-java-driver/5.2/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#resumeAfter(org.bson.BsonDocument)]]
     */
   def resumeAfter(resumeToken: BsonDocument): SyncWatchQuery[F, A] = SyncWatchQuery(iterable.resumeAfter(resumeToken))
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.1/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#fullDocument(com.mongodb.client.model.changestream.FullDocument)]]
+  /** [[https://mongodb.github.io/mongo-java-driver/5.2/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#fullDocument(com.mongodb.client.model.changestream.FullDocument)]]
     */
   def fullDocument(fullDocument: FullDocument): SyncWatchQuery[F, A] =
     SyncWatchQuery(iterable.fullDocument(fullDocument))
