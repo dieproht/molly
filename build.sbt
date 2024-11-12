@@ -71,7 +71,7 @@ lazy val molly_medeia = project
     libraryDependencies ++=
       Seq(
         "de.megaera"    %% "medeia"             % "0.13.4",
-        "org.mongodb"    % "bson"               % "4.11.4",
+        "org.mongodb"    % "bson"               % "4.11.5",
         "org.typelevel" %% "cats-core"          % "2.12.0",
         "org.typelevel" %% "cats-effect-kernel" % "3.5.5",
         //
