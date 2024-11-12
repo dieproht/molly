@@ -53,13 +53,13 @@ lazy val molly_core = project
         "org.mongodb"         % "mongodb-driver-sync"            % "5.2.0",
         "org.reactivestreams" % "reactive-streams"               % "1.0.4",
         "org.typelevel"      %% "cats-core"                      % "2.12.0",
-        "org.typelevel"      %% "cats-effect-kernel"             % "3.5.4",
+        "org.typelevel"      %% "cats-effect-kernel"             % "3.5.5",
         //
-        "ch.qos.logback"       % "logback-classic"              % "1.5.8"  % Test,
+        "ch.qos.logback"       % "logback-classic"              % "1.5.12" % Test,
         "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.4" % Test,
         "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
         "org.scalatest"       %% "scalatest"                    % "3.2.19" % Test,
-        "org.typelevel"       %% "cats-effect"                  % "3.5.4"  % Test
+        "org.typelevel"       %% "cats-effect"                  % "3.5.5"  % Test
       )
   )
 
@@ -70,15 +70,15 @@ lazy val molly_medeia = project
     name := "molly-medeia",
     libraryDependencies ++=
       Seq(
-        "de.megaera"    %% "medeia"             % "0.13.3",
+        "de.megaera"    %% "medeia"             % "0.13.4",
         "org.mongodb"    % "bson"               % "4.11.5",
         "org.typelevel" %% "cats-core"          % "2.12.0",
-        "org.typelevel" %% "cats-effect-kernel" % "3.5.4",
+        "org.typelevel" %% "cats-effect-kernel" % "3.5.5",
         //
-        "ch.qos.logback"       % "logback-classic"              % "1.5.8"  % Test,
+        "ch.qos.logback"       % "logback-classic"              % "1.5.12" % Test,
         "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.4" % Test,
         "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
-        "org.typelevel"       %% "cats-effect"                  % "3.5.4"  % Test
+        "org.typelevel"       %% "cats-effect"                  % "3.5.5"  % Test
       )
   )
   .dependsOn(molly_core % "compile->compile;test->test")
