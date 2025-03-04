@@ -2,7 +2,6 @@ package molly.core
 
 import cats.effect.kernel.Async
 import fs2.Stream
-import fs2.interop.reactivestreams.fromPublisher
 import org.reactivestreams.Publisher
 import org.reactivestreams.Subscriber
 import org.reactivestreams.Subscription
