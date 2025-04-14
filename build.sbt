@@ -47,16 +47,16 @@ lazy val molly_core = project
       Seq(
         "co.fs2"             %% "fs2-core"                       % "3.12.0",
         "co.fs2"             %% "fs2-reactive-streams"           % "3.12.0",
-        "org.mongodb"         % "bson"                           % "5.3.1",
-        "org.mongodb"         % "mongodb-driver-core"            % "5.3.1",
-        "org.mongodb"         % "mongodb-driver-reactivestreams" % "5.3.1",
-        "org.mongodb"         % "mongodb-driver-sync"            % "5.3.1",
+        "org.mongodb"         % "bson"                           % "5.4.0",
+        "org.mongodb"         % "mongodb-driver-core"            % "5.4.0",
+        "org.mongodb"         % "mongodb-driver-reactivestreams" % "5.4.0",
+        "org.mongodb"         % "mongodb-driver-sync"            % "5.4.0",
         "org.reactivestreams" % "reactive-streams"               % "1.0.4",
         "org.typelevel"      %% "cats-core"                      % "2.13.0",
         "org.typelevel"      %% "cats-effect-kernel"             % "3.5.7",
         //
-        "ch.qos.logback"       % "logback-classic"              % "1.5.17" % Test,
-        "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.8" % Test,
+        "ch.qos.logback"       % "logback-classic"              % "1.5.18" % Test,
+        "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.43.0" % Test,
         "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
         "org.scalatest"       %% "scalatest"                    % "3.2.19" % Test,
         "org.typelevel"       %% "cats-effect"                  % "3.5.7"  % Test
@@ -75,8 +75,8 @@ lazy val molly_medeia = project
         "org.typelevel" %% "cats-core"          % "2.13.0",
         "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
         //
-        "ch.qos.logback"       % "logback-classic"              % "1.5.17" % Test,
-        "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.41.8" % Test,
+        "ch.qos.logback"       % "logback-classic"              % "1.5.18" % Test,
+        "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.43.0" % Test,
         "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
         "org.typelevel"       %% "cats-effect"                  % "3.5.7"  % Test
       )
