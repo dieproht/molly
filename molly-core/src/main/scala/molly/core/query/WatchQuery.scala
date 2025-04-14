@@ -19,11 +19,11 @@ final case class WatchQuery[F[_], A] private[core] (private[core] val publisher:
     MollyCodec[F, A]
 ):
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.3/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#resumeAfter(org.bson.BsonDocument)]]
+  /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#resumeAfter(org.bson.BsonDocument)]]
     */
   def resumeAfter(resumeToken: BsonDocument): WatchQuery[F, A] = WatchQuery(publisher.resumeAfter(resumeToken))
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.3/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#fullDocument(com.mongodb.client.model.changestream.FullDocument)]]
+  /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#fullDocument(com.mongodb.client.model.changestream.FullDocument)]]
     */
   def fullDocument(fullDocument: FullDocument): WatchQuery[F, A] = WatchQuery(publisher.fullDocument(fullDocument))
 
