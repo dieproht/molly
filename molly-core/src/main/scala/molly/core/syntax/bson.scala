@@ -3,7 +3,7 @@ package molly.core.syntax
 import scala.jdk.CollectionConverters.*
 
 /** Syntactic sugar for
-  * [[https://mongodb.github.io/mongo-java-driver/5.3/apidocs/bson/org/bson/package-summary.html the Java driver's bson classes]].
+  * [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/bson/org/bson/package-summary.html the Java driver's bson classes]].
   */
 trait bson:
   type BsonArray = org.bson.BsonArray
