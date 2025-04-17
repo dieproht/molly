@@ -17,24 +17,24 @@ final case class FindQuery[F[_], A] private[core] (private[core] val publisher: 
     codec: MollyCodec[F, A]
 ):
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/FindPublisher.html#filter(org.bson.conversions.Bson)]]
-    */
-  def filter(filter: Bson): FindQuery[F, A] = FindQuery(publisher.filter(filter))
+    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/FindPublisher.html#filter(org.bson.conversions.Bson)]]
+      */
+    def filter(filter: Bson): FindQuery[F, A] = FindQuery(publisher.filter(filter))
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/FindPublisher.html#limit(int)]]
-    */
-  def limit(limit: Int): FindQuery[F, A] = FindQuery(publisher.limit(limit))
+    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/FindPublisher.html#limit(int)]]
+      */
+    def limit(limit: Int): FindQuery[F, A] = FindQuery(publisher.limit(limit))
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/FindPublisher.html#sort(org.bson.conversions.Bson)]]
-    */
-  def sort(sort: Bson): FindQuery[F, A] = FindQuery(publisher.sort(sort))
+    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/FindPublisher.html#sort(org.bson.conversions.Bson)]]
+      */
+    def sort(sort: Bson): FindQuery[F, A] = FindQuery(publisher.sort(sort))
 
-  def first(): F[Option[A]] =
-    for
-      resultDoc <- fromOptionPublisher(publisher.first)
-      result    <- resultDoc.traverse(codec.decode)
-    yield result
+    def first(): F[Option[A]] =
+        for
+            resultDoc <- fromOptionPublisher(publisher.first)
+            result    <- resultDoc.traverse(codec.decode)
+        yield result
 
-  def list(bufferSize: Int = 16): F[List[A]] = stream(bufferSize).compile.toList
+    def list(bufferSize: Int = 16): F[List[A]] = stream(bufferSize).compile.toList
 
-  def stream(bufferSize: Int = 16): Stream[F, A] = fromStreamPublisher(publisher, bufferSize).evalMap(codec.decode)
+    def stream(bufferSize: Int = 16): Stream[F, A] = fromStreamPublisher(publisher, bufferSize).evalMap(codec.decode)

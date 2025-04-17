@@ -18,32 +18,36 @@ final case class SyncWatchQuery[F[_], A] private[core] (private[core] val iterab
     codec: MollyCodec[F, A]
 ):
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#resumeAfter(org.bson.BsonDocument)]]
-    */
-  def resumeAfter(resumeToken: BsonDocument): SyncWatchQuery[F, A] = SyncWatchQuery(iterable.resumeAfter(resumeToken))
+    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#resumeAfter(org.bson.BsonDocument)]]
+      */
+    def resumeAfter(resumeToken: BsonDocument): SyncWatchQuery[F, A] = SyncWatchQuery(iterable.resumeAfter(resumeToken))
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#fullDocument(com.mongodb.client.model.changestream.FullDocument)]]
-    */
-  def fullDocument(fullDocument: FullDocument): SyncWatchQuery[F, A] =
-    SyncWatchQuery(iterable.fullDocument(fullDocument))
+    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/ChangeStreamPublisher.html#fullDocument(com.mongodb.client.model.changestream.FullDocument)]]
+      */
+    def fullDocument(fullDocument: FullDocument): SyncWatchQuery[F, A] =
+        SyncWatchQuery(iterable.fullDocument(fullDocument))
 
-  def list(bufferSize: Int = 16, timeout: FiniteDuration = 10.seconds): F[List[ChangeStreamDocument[A]]] =
-    stream(bufferSize, timeout).compile.toList
+    def list(bufferSize: Int = 16, timeout: FiniteDuration = 10.seconds): F[List[ChangeStreamDocument[A]]] =
+        stream(bufferSize, timeout).compile.toList
 
-  def stream(bufferSize: Int = 16, timeout: FiniteDuration = 10.seconds): Stream[F, ChangeStreamDocument[A]] =
-    Stream
-      .bracket(f.blocking(iterable.batchSize(bufferSize).cursor()))(cursor => f.blocking(cursor.close()))
-      .flatMap(fromCursor(_, bufferSize, timeout))
+    def stream(bufferSize: Int = 16, timeout: FiniteDuration = 10.seconds): Stream[F, ChangeStreamDocument[A]] =
+        Stream
+            .bracket(f.blocking(iterable.batchSize(bufferSize).cursor()))(cursor => f.blocking(cursor.close()))
+            .flatMap(fromCursor(_, bufferSize, timeout))
 
-  private type Cursor = MongoChangeStreamCursor[ChangeStreamDocument[BsonDocument]]
+    private type Cursor = MongoChangeStreamCursor[ChangeStreamDocument[BsonDocument]]
 
-  private def fromCursor(cursor: Cursor, bufferSize: Int, timeout: FiniteDuration): Stream[F, ChangeStreamDocument[A]] =
-    def getNext(cursor: Cursor): F[Option[(ChangeStreamDocument[BsonDocument], Cursor)]] =
-      f.blocking(if cursor.hasNext() then Some(cursor.next() -> cursor) else None)
-        .cancelable(f.blocking(cursor.close()))
+    private def fromCursor(
+        cursor: Cursor,
+        bufferSize: Int,
+        timeout: FiniteDuration
+    ): Stream[F, ChangeStreamDocument[A]] =
+        def getNext(cursor: Cursor): F[Option[(ChangeStreamDocument[BsonDocument], Cursor)]] =
+            f.blocking(if cursor.hasNext() then Some(cursor.next() -> cursor) else None)
+                .cancelable(f.blocking(cursor.close()))
 
-    Stream
-      .unfoldEval(cursor)(getNext)
-      .evalMap(WatchQuery.decodeChangeStreamDocument)
-      .groupWithin(bufferSize, timeout)
-      .flatMap(Stream.chunk)
+        Stream
+            .unfoldEval(cursor)(getNext)
+            .evalMap(WatchQuery.decodeChangeStreamDocument)
+            .groupWithin(bufferSize, timeout)
+            .flatMap(Stream.chunk)

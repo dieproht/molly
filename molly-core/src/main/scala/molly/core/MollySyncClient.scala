@@ -12,20 +12,20 @@ import com.mongodb.client.MongoClients
   */
 final case class MollySyncClient[F[_]] private (private[core] val delegate: MongoClient)(using f: Async[F]):
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoClient.html#getDatabase(java.lang.String)]]
-    */
-  def getDatabase(name: String): F[MollySyncDatabase[F]] =
-    f.delay(delegate.getDatabase(name)).map(MollySyncDatabase(_))
+    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoClient.html#getDatabase(java.lang.String)]]
+      */
+    def getDatabase(name: String): F[MollySyncDatabase[F]] =
+        f.delay(delegate.getDatabase(name)).map(MollySyncDatabase(_))
 
-  /** Like [[this.getDatabase]], but returns a
-    * [[https://typelevel.org/cats-effect/api/3.x/cats/effect/kernel/Resource.html Resource]]
-    */
-  def getDatabaseAsResource(name: String): Resource[F, MollySyncDatabase[F]] =
-    Resource.eval(getDatabase(name))
+    /** Like [[this.getDatabase]], but returns a
+      * [[https://typelevel.org/cats-effect/api/3.x/cats/effect/kernel/Resource.html Resource]]
+      */
+    def getDatabaseAsResource(name: String): Resource[F, MollySyncDatabase[F]] =
+        Resource.eval(getDatabase(name))
 
 object MollySyncClient:
 
-  def make[F[_]](clientSettings: MongoClientSettings)(using f: Async[F]): Resource[F, MollySyncClient[F]] =
-    Resource
-      .make(f.delay(MongoClients.create(clientSettings)))(c => f.delay(c.close()))
-      .map(MollySyncClient(_))
+    def make[F[_]](clientSettings: MongoClientSettings)(using f: Async[F]): Resource[F, MollySyncClient[F]] =
+        Resource
+            .make(f.delay(MongoClients.create(clientSettings)))(c => f.delay(c.close()))
+            .map(MollySyncClient(_))

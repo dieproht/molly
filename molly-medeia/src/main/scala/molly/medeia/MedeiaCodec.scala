@@ -11,9 +11,9 @@ import org.bson.BsonDocument
   */
 object codec:
 
-  given instance[F[_], A: BsonDocumentCodec](using f: Async[F]): MollyCodec[F, A] =
-    new MollyCodec[F, A]:
-      override def decode(doc: BsonDocument): F[A] =
-        f.delay(BsonDocumentCodec[A].decode(doc)).rethrow
+    given instance[F[_], A: BsonDocumentCodec](using f: Async[F]): MollyCodec[F, A] =
+        new MollyCodec[F, A]:
+            override def decode(doc: BsonDocument): F[A] =
+                f.delay(BsonDocumentCodec[A].decode(doc)).rethrow
 
-      override def encode(obj: A): F[BsonDocument] = f.delay(BsonDocumentCodec[A].encode(obj))
+            override def encode(obj: A): F[BsonDocument] = f.delay(BsonDocumentCodec[A].encode(obj))
