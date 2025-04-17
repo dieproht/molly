@@ -17,11 +17,11 @@ final case class MollySyncCollection[F[_], A] private[core] (private[core] val d
     MollyCodec[F, A]
 ):
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoCollection.html#watch()]]
-    */
-  def watch(): SyncWatchQuery[F, A] = SyncWatchQuery(delegate.watch(classOf[BsonDocument]))
+    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoCollection.html#watch()]]
+      */
+    def watch(): SyncWatchQuery[F, A] = SyncWatchQuery(delegate.watch(classOf[BsonDocument]))
 
-  /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoCollection.html#watch(java.util.List)]]
-    */
-  def watch(pipeline: Seq[Bson]): SyncWatchQuery[F, A] =
-    SyncWatchQuery(delegate.watch(pipeline.asJava, classOf[BsonDocument]))
+    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoCollection.html#watch(java.util.List)]]
+      */
+    def watch(pipeline: Seq[Bson]): SyncWatchQuery[F, A] =
+        SyncWatchQuery(delegate.watch(pipeline.asJava, classOf[BsonDocument]))
