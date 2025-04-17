@@ -1,3 +1,5 @@
+import xerial.sbt.Sonatype.sonatypeCentralHost
+
 ThisBuild / organization := "io.github.dieproht"
 ThisBuild / homepage := Some(url("https://github.com/dieproht/molly"))
 ThisBuild / licenses +=
@@ -18,12 +20,9 @@ ThisBuild / semanticdbEnabled := true
 
 ThisBuild / Test / fork := true
 
-sonatypeCredentialHost := "s01.oss.sonatype.org"
-sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
+ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 
 def commonSettings = Seq(
-  sonatypeCredentialHost := "s01.oss.sonatype.org",
-  sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
   scalacOptions ++= Seq(
     "-encoding",
     "UTF-8",
