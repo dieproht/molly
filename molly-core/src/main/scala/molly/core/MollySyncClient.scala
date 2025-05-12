@@ -8,11 +8,11 @@ import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 
 /** Molly's counterpart to
-  * [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoClient.html MongoClient]].
+  * [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-sync/com/mongodb/client/MongoClient.html MongoClient]].
   */
 final case class MollySyncClient[F[_]] private (private[core] val delegate: MongoClient)(using f: Async[F]):
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoClient.html#getDatabase(java.lang.String)]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-sync/com/mongodb/client/MongoClient.html#getDatabase(java.lang.String)]]
       */
     def getDatabase(name: String): F[MollySyncDatabase[F]] =
         f.delay(delegate.getDatabase(name)).map(MollySyncDatabase(_))
