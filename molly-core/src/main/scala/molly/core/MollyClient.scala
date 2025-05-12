@@ -9,11 +9,11 @@ import com.mongodb.reactivestreams.client.MongoClient
 import com.mongodb.reactivestreams.client.MongoClients
 
 /** Molly's counterpart to
-  * [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoClient.html MongoClient]].
+  * [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoClient.html MongoClient]].
   */
 final case class MollyClient[F[_]] private (private[core] val delegate: MongoClient)(using f: Async[F]):
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoClient.html#getDatabase(java.lang.String)]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoClient.html#getDatabase(java.lang.String)]]
       */
     def getDatabase(name: String): F[MollyDatabase[F]] =
         f.delay(delegate.getDatabase(name)).map(MollyDatabase(_))
@@ -24,7 +24,7 @@ final case class MollyClient[F[_]] private (private[core] val delegate: MongoCli
     def getDatabaseAsResource(name: String): Resource[F, MollyDatabase[F]] =
         Resource.eval(getDatabase(name))
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-reactivestreams/com/mongodb/reactivestreams/client/MongoClient.html#getClusterDescription()]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoClient.html#getClusterDescription()]]
       */
     def getClusterDescription(): ClusterDescription = delegate.getClusterDescription()
 

@@ -4,7 +4,7 @@ import org.bson.BsonDocument
 import org.bson.conversions.Bson
 
 /** Syntactic sugar for
-  * [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-core/com/mongodb/client/model/package-summary.html the Java driver's model classes]].
+  * [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/mongodb-driver-core/com/mongodb/client/model/package-summary.html the Java driver's model classes]].
   */
 trait model:
 

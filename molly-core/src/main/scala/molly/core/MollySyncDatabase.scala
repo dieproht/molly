@@ -13,11 +13,11 @@ import org.bson.BsonDocument
 import scala.jdk.CollectionConverters.*
 
 /** Molly's counterpart to
-  * [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoDatabase.html MongoDatabase]]
+  * [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-sync/com/mongodb/client/MongoDatabase.html MongoDatabase]]
   */
 final case class MollySyncDatabase[F[_]] private[core] (private[core] val delegate: MongoDatabase)(using f: Async[F]):
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoDatabase.html#getCollection(java.lang.String)]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-sync/com/mongodb/client/MongoDatabase.html#getCollection(java.lang.String)]]
       */
     def getCollection(collectionName: String): F[MollySyncCollection[F, BsonDocument]] =
         f.delay(delegate.getCollection(collectionName, classOf[BsonDocument])).map(MollySyncCollection(_))
@@ -41,7 +41,7 @@ final case class MollySyncDatabase[F[_]] private[core] (private[core] val delega
     ): Resource[F, MollySyncCollection[F, A]] =
         Resource.eval(getTypedCollection(collectionName))
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoDatabase.html#listCollectionNames()]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-sync/com/mongodb/client/MongoDatabase.html#listCollectionNames()]]
       */
     def listCollectionNames(): F[List[String]] =
         Stream
@@ -50,29 +50,29 @@ final case class MollySyncDatabase[F[_]] private[core] (private[core] val delega
             .compile
             .toList
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoDatabase.html#getReadConcern()]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-sync/com/mongodb/client/MongoDatabase.html#getReadConcern()]]
       */
     def getReadConcern(): ReadConcern = delegate.getReadConcern()
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoDatabase.html#getReadPreference()]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-sync/com/mongodb/client/MongoDatabase.html#getReadPreference()]]
       */
     def getReadPreference(): ReadPreference = delegate.getReadPreference()
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoDatabase.html#getWriteConcern()]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-sync/com/mongodb/client/MongoDatabase.html#getWriteConcern()]]
       */
     def getWriteConcern(): WriteConcern = delegate.getWriteConcern()
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoDatabase.html#withReadConcern(com.mongodb.ReadConcern)]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-sync/com/mongodb/client/MongoDatabase.html#withReadConcern(com.mongodb.ReadConcern)]]
       */
     def withReadConcern(readConcern: ReadConcern): MollySyncDatabase[F] =
         MollySyncDatabase(delegate.withReadConcern(readConcern))
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoDatabase.html#withReadPreference(com.mongodb.ReadPreference)]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-sync/com/mongodb/client/MongoDatabase.html#withReadPreference(com.mongodb.ReadPreference)]]
       */
     def withReadPreference(readPreference: ReadPreference): MollySyncDatabase[F] =
         MollySyncDatabase(delegate.withReadPreference(readPreference))
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.4/apidocs/mongodb-driver-sync/com/mongodb/client/MongoDatabase.html#withWriteConcern(com.mongodb.WriteConcern)]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-sync/com/mongodb/client/MongoDatabase.html#withWriteConcern(com.mongodb.WriteConcern)]]
       */
     def withWriteConcern(writeConcern: WriteConcern): MollySyncDatabase[F] =
         MollySyncDatabase(delegate.withWriteConcern(writeConcern))
