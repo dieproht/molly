@@ -1,5 +1,3 @@
-import xerial.sbt.Sonatype.sonatypeCentralHost
-
 ThisBuild / organization := "io.github.dieproht"
 ThisBuild / homepage := Some(url("https://github.com/dieproht/molly"))
 ThisBuild / licenses +=
@@ -19,8 +17,6 @@ ThisBuild / scalaVersion := "3.3.6"
 ThisBuild / semanticdbEnabled := true
 
 ThisBuild / Test / fork := true
-
-ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 
 def commonSettings = Seq(
   scalacOptions ++= Seq(
