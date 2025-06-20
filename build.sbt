@@ -50,11 +50,11 @@ lazy val molly_core = project
             "org.typelevel"      %% "cats-core"                      % "2.13.0",
             "org.typelevel"      %% "cats-effect-kernel"             % "3.6.1",
             //
-            "ch.qos.logback"       % "logback-classic"              % "1.5.18" % Test,
-            "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.43.0" % Test,
-            "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
-            "org.scalatest"       %% "scalatest"                    % "3.2.19" % Test,
-            "org.typelevel"       %% "cats-effect"                  % "3.6.1"  % Test
+            "ch.qos.logback" % "logback-classic"              % "1.5.18" % Test,
+            "com.dimafeng"  %% "testcontainers-scala-mongodb" % "0.43.0" % Test,
+            "org.typelevel" %% "weaver-cats"                  % "0.9.0"  % Test,
+            "org.scalatest" %% "scalatest"                    % "3.2.19" % Test,
+            "org.typelevel" %% "cats-effect"                  % "3.6.1"  % Test
           )
     )
 
@@ -70,10 +70,10 @@ lazy val molly_medeia = project
             "org.typelevel" %% "cats-core"          % "2.13.0",
             "org.typelevel" %% "cats-effect-kernel" % "3.6.1",
             //
-            "ch.qos.logback"       % "logback-classic"              % "1.5.18" % Test,
-            "com.dimafeng"        %% "testcontainers-scala-mongodb" % "0.43.0" % Test,
-            "com.disneystreaming" %% "weaver-cats"                  % "0.8.4"  % Test,
-            "org.typelevel"       %% "cats-effect"                  % "3.6.1"  % Test
+            "ch.qos.logback" % "logback-classic"              % "1.5.18" % Test,
+            "com.dimafeng"  %% "testcontainers-scala-mongodb" % "0.43.0" % Test,
+            "org.typelevel" %% "weaver-cats"                  % "0.9.0"  % Test,
+            "org.typelevel" %% "cats-effect"                  % "3.6.1"  % Test
           )
     )
     .dependsOn(molly_core % "compile->compile;test->test")
