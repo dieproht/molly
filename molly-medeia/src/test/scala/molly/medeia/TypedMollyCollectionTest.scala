@@ -205,9 +205,9 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
         containers =>
             withClient(containers) { (client: MollyClient[IO]) =>
                 for
-                    db   <- client.getDatabase("test")
-                    coll <- db.getTypedCollection[City]("findOneAndReplace2")
-                    _    <- coll.insertOne(trier)
+                    db     <- client.getDatabase("test")
+                    coll   <- db.getTypedCollection[City]("findOneAndReplace2")
+                    _      <- coll.insertOne(trier)
                     resDoc <- coll.findOneAndReplace(
                       Filters.eq("name", "Ludwigslust"),
                       ludwigslust,
@@ -225,9 +225,9 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
         containers =>
             withClient(containers) { (client: MollyClient[IO]) =>
                 for
-                    db   <- client.getDatabase("test")
-                    coll <- db.getTypedCollection[City]("findOneAndReplace3")
-                    _    <- coll.insertOne(trier)
+                    db     <- client.getDatabase("test")
+                    coll   <- db.getTypedCollection[City]("findOneAndReplace3")
+                    _      <- coll.insertOne(trier)
                     resDoc <- coll.findOneAndReplace(
                       Filters.eq("name", "Ludwigslust"),
                       ludwigslust,
@@ -335,7 +335,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 db   <- client.getDatabase("test")
                 coll <- db.getTypedCollection[City]("replaceOne3")
                 _    <- coll.insertMany(Seq(trier))
-                res <- coll.replaceOne(
+                res  <- coll.replaceOne(
                   Filters.eq("name", ludwigslust.name),
                   ludwigslust,
                   ReplaceOptions().upsert(false)
