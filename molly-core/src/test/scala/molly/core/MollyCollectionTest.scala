@@ -375,9 +375,9 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                 val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("foo", new BsonString("bar"))
                 val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("yoo"))
                 for
-                    db   <- client.getDatabase("test")
-                    coll <- db.getCollection("findOneAndReplace2")
-                    _    <- coll.insertOne(doc1)
+                    db     <- client.getDatabase("test")
+                    coll   <- db.getCollection("findOneAndReplace2")
+                    _      <- coll.insertOne(doc1)
                     resDoc <- coll.findOneAndReplace(
                       Filters.eq("_id", 2),
                       doc2,
@@ -395,9 +395,9 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                 val doc1 = new BsonDocument("_id", new BsonInt32(1)).append("foo", new BsonString("bar"))
                 val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("yoo"))
                 for
-                    db   <- client.getDatabase("test")
-                    coll <- db.getCollection("findOneAndReplace3")
-                    _    <- coll.insertOne(doc1)
+                    db     <- client.getDatabase("test")
+                    coll   <- db.getCollection("findOneAndReplace3")
+                    _      <- coll.insertOne(doc1)
                     resDoc <- coll.findOneAndReplace(
                       Filters.eq("_id", 2),
                       doc2,
@@ -448,9 +448,9 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
             val doc2 = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("baz"))
             val doc2a = new BsonDocument("_id", new BsonInt32(2)).append("foo", new BsonString("yoo"))
             for
-                db   <- client.getDatabase("test")
-                coll <- db.getCollection("findOneAndUpdate3")
-                _    <- coll.insertMany(Seq(doc1, doc2))
+                db     <- client.getDatabase("test")
+                coll   <- db.getCollection("findOneAndUpdate3")
+                _      <- coll.insertMany(Seq(doc1, doc2))
                 resDoc <- coll.findOneAndUpdate(
                   Filters.eq("_id", 2),
                   Updates.set("foo", "yoo"),
