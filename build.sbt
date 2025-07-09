@@ -48,13 +48,13 @@ lazy val molly_core = project
             "org.mongodb"         % "mongodb-driver-sync"            % "5.5.1",
             "org.reactivestreams" % "reactive-streams"               % "1.0.4",
             "org.typelevel"      %% "cats-core"                      % "2.13.0",
-            "org.typelevel"      %% "cats-effect-kernel"             % "3.6.1",
+            "org.typelevel"      %% "cats-effect-kernel"             % "3.6.2",
             //
             "ch.qos.logback" % "logback-classic"              % "1.5.18" % Test,
             "com.dimafeng"  %% "testcontainers-scala-mongodb" % "0.43.0" % Test,
             "org.typelevel" %% "weaver-cats"                  % "0.9.0"  % Test,
             "org.scalatest" %% "scalatest"                    % "3.2.19" % Test,
-            "org.typelevel" %% "cats-effect"                  % "3.6.1"  % Test
+            "org.typelevel" %% "cats-effect"                  % "3.6.2"  % Test
           )
     )
 
@@ -68,12 +68,12 @@ lazy val molly_medeia = project
             "de.megaera"    %% "medeia"             % "1.0.1",
             "org.mongodb"    % "bson"               % "4.11.5",
             "org.typelevel" %% "cats-core"          % "2.13.0",
-            "org.typelevel" %% "cats-effect-kernel" % "3.6.1",
+            "org.typelevel" %% "cats-effect-kernel" % "3.6.2",
             //
             "ch.qos.logback" % "logback-classic"              % "1.5.18" % Test,
             "com.dimafeng"  %% "testcontainers-scala-mongodb" % "0.43.0" % Test,
             "org.typelevel" %% "weaver-cats"                  % "0.9.0"  % Test,
-            "org.typelevel" %% "cats-effect"                  % "3.6.1"  % Test
+            "org.typelevel" %% "cats-effect"                  % "3.6.2"  % Test
           )
     )
     .dependsOn(molly_core % "compile->compile;test->test")
