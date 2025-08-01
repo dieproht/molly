@@ -8,7 +8,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.jdk.CollectionConverters.*
 
-class BsonValueTest extends AnyFlatSpec with Matchers:
+class BsonValueTest extends AnyFlatSpec, Matchers:
 
     "The BsonArray companion object" should "create a BsonArray" in:
         BsonArray() shouldEqual new BsonArray()
