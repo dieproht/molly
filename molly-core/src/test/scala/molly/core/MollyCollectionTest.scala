@@ -28,12 +28,13 @@ import org.bson.BsonString
 import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
 
+import java.util.Objects
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.*
 
-object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport:
+object MollyCollectionTest extends IOSuite, TestContainerForAll[IO], MollyTestSupport:
 
-    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse("mongo:7.0"))
+    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse(mongoVersion))
 
     test("aggregate: perform aggregation pipeline on empty collection"): containers =>
         withClient(containers): (client: MollyClient[IO]) =>
@@ -317,7 +318,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                 _       <- coll.insertMany(Seq(doc1, doc2))
                 resDoc  <- coll.findOneAndDelete(Filters.eq("_id", 2))
                 resColl <- coll.find().list()
-            yield expect(resDoc == Some(doc2))
+            yield expect(resDoc.contains(doc2))
                 .and(expect(resColl.size == 1))
                 .and(expect(resColl.contains(doc1)))
 
@@ -331,7 +332,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                 _       <- coll.insertMany(Seq(doc1, doc2))
                 resDoc  <- coll.findOneAndDelete(Filters.eq("_id", 3))
                 resColl <- coll.find().list()
-            yield expect(resDoc == None)
+            yield expect(resDoc.isEmpty)
                 .and(expect(resColl.size == 2))
                 .and(expect(resColl.contains(doc1)))
                 .and(expect(resColl.contains(doc2)))
@@ -347,7 +348,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                 _       <- coll.insertMany(Seq(doc1, doc2))
                 resDoc  <- coll.findOneAndReplace(Filters.eq("_id", 2), doc2a)
                 resColl <- coll.find().list()
-            yield expect(resDoc == Some(doc2))
+            yield expect(resDoc.contains(doc2))
                 .and(expect(resColl.size == 2))
                 .and(expect(resColl.contains(doc1)))
                 .and(expect(resColl.contains(doc2a)))
@@ -363,7 +364,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                 _       <- coll.insertMany(Seq(doc1, doc2))
                 resDoc  <- coll.findOneAndReplace(Filters.eq("_id", 3), doc3)
                 resColl <- coll.find().list()
-            yield expect(resDoc == None)
+            yield expect(resDoc.isEmpty)
                 .and(expect(resColl.size == 2))
                 .and(expect(resColl.contains(doc1)))
                 .and(expect(resColl.contains(doc2)))
@@ -384,7 +385,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                       FindOneAndReplaceOptions().upsert(true)
                     )
                     resColl <- coll.find().list()
-                yield expect(resDoc == None)
+                yield expect(resDoc.isEmpty)
                     .and(expect(resColl.size == 2))
                     .and(expect(resColl.contains(doc1)))
                     .and(expect(resColl.contains(doc2)))
@@ -404,7 +405,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                       FindOneAndReplaceOptions().upsert(false)
                     )
                     resColl <- coll.find().list()
-                yield expect(resDoc == None)
+                yield expect(resDoc.isEmpty)
                     .and(expect(resColl.size == 1))
                     .and(expect(resColl.contains(doc1)))
                     .and(expect(!resColl.contains(doc2)))
@@ -420,7 +421,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                 _       <- coll.insertMany(Seq(doc1, doc2))
                 resDoc  <- coll.findOneAndUpdate(Filters.eq("_id", 2), Updates.set("foo", "yoo"))
                 resColl <- coll.find().list()
-            yield expect(resDoc == Some(doc2))
+            yield expect(resDoc.contains(doc2))
                 .and(expect(resColl.size == 2))
                 .and(expect(resColl.contains(doc1)))
                 .and(expect(resColl.contains(doc2a)))
@@ -436,7 +437,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                 _       <- coll.insertMany(Seq(doc1, doc2))
                 resDoc  <- coll.findOneAndUpdate(Filters.eq("_id", 3), Updates.set("foo", "yoo"))
                 resColl <- coll.find().list()
-            yield expect(resDoc == None)
+            yield expect(resDoc.isEmpty)
                 .and(expect(resColl.size == 2))
                 .and(expect(resColl.contains(doc1)))
                 .and(expect(resColl.contains(doc2)))
@@ -457,7 +458,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                   FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
                 )
                 resColl <- coll.find().list()
-            yield expect(resDoc == Some(doc2a))
+            yield expect(resDoc.contains(doc2a))
                 .and(expect(resColl.size == 2))
                 .and(expect(resColl.contains(doc1)))
                 .and(expect(resColl.contains(doc2a)))
@@ -543,7 +544,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                 _       <- coll.insertMany(Seq(doc1, doc2, doc3))
                 results <- coll.find().sort(Sorts.descending("foo")).list()
             yield expect(results.size == 3)
-                .and(expect(results(0) == doc2))
+                .and(expect(results.head == doc2))
                 .and(expect(results(1) == doc3))
                 .and(expect(results(2) == doc1))
 
@@ -621,11 +622,11 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                 coll   <- db.getCollection("watch1")
                 csDocs <- runChangeStream(coll).both(insert(coll)).map(_._1)
             yield expect(csDocs.size == 3)
-                .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(1)))))
-                .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(2)))))
-                .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(3)))))
-                .and(expect(csDocs.forall(_.getOperationTypeString() == "insert")))
-                .and(expect(csDocs.forall(_.getFullDocument() != null)))
+                .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(1)))))
+                .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(2)))))
+                .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(3)))))
+                .and(expect(csDocs.forall(_.getOperationTypeString == "insert")))
+                .and(expect(csDocs.forall(d => Objects.nonNull(d.getFullDocument))))
 
     test("watch: return different changes"): containers =>
         withClient(containers): (client: MollyClient[IO]) =>
@@ -647,11 +648,11 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                 coll   <- db.getCollection("watch2")
                 csDocs <- runChangeStream(coll).both(insertAndUpdate(coll)).map(_._1)
             yield expect(csDocs.size == 4)
-                .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(1)))))
-                .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(2)))))
-                .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(3)))))
-                .and(expect(csDocs.take(3).forall(_.getOperationTypeString() == "insert")))
-                .and(expect(csDocs.last.getOperationTypeString() == "update"))
+                .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(1)))))
+                .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(2)))))
+                .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(3)))))
+                .and(expect(csDocs.take(3).forall(_.getOperationTypeString == "insert")))
+                .and(expect(csDocs.last.getOperationTypeString == "update"))
 
     test("watch: return one change per inserted document with aggregation applied"): containers =>
         withClient(containers): (client: MollyClient[IO]) =>
@@ -670,7 +671,7 @@ object MollyCollectionTest extends IOSuite with TestContainerForAll[IO] with Mol
                 db     <- client.getDatabase("test")
                 coll   <- db.getCollection("watch3")
                 csDocs <- runChangeStream(coll).both(insert(coll)).map(_._1)
-            yield expect(csDocs.size == 3).and(expect(csDocs.forall(_.getFullDocument() == null)))
+            yield expect(csDocs.size == 3).and(expect(csDocs.forall(d => Objects.isNull(d.getFullDocument))))
 
     test("propagate errors from underlying driver"): containers =>
         withClient(containers): (client: MollyClient[IO]) =>

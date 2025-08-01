@@ -8,7 +8,7 @@ import molly.core.syntax.bsondocument.BsonDocument
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class BsonDocumentTest extends AnyFlatSpec with Matchers:
+class BsonDocumentTest extends AnyFlatSpec, Matchers:
     "The BsonDocument companion" should "create a BsonDocument" in:
         BsonDocument() shouldEqual new BsonDocument()
 
