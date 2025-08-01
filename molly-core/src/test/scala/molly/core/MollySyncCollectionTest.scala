@@ -16,7 +16,7 @@ import scala.concurrent.duration.*
 
 object MollySyncCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport:
 
-    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse("mongo:7.0"))
+    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse(mongoVersion))
 
     private val eta = 200.millis
 

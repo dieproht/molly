@@ -8,7 +8,7 @@ import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
 
 object MollyDatabaseTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport:
-    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse("mongo:7.0"))
+    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse(mongoVersion))
 
     test("listCollectionNames: return names of all collections in database"): containers =>
         withClient(containers): (client: MollyClient[IO]) =>
