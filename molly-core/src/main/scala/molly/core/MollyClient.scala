@@ -4,9 +4,15 @@ import cats.effect.kernel.Async
 import cats.effect.kernel.Resource
 import cats.syntax.functor.*
 import com.mongodb.MongoClientSettings
+import com.mongodb.client.model.bulk.ClientBulkWriteOptions
+import com.mongodb.client.model.bulk.ClientBulkWriteResult
+import com.mongodb.client.model.bulk.ClientNamespacedWriteModel
 import com.mongodb.connection.ClusterDescription
 import com.mongodb.reactivestreams.client.MongoClient
 import com.mongodb.reactivestreams.client.MongoClients
+import molly.core.reactivestreams.fromSinglePublisher
+
+import scala.jdk.CollectionConverters.*
 
 /** Molly's counterpart to
   * [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoClient.html MongoClient]].
@@ -27,6 +33,19 @@ final case class MollyClient[F[_]] private (private[core] val delegate: MongoCli
     /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoClient.html#getClusterDescription()]]
       */
     def getClusterDescription(): ClusterDescription = delegate.getClusterDescription()
+
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoCluster.html#bulkWrite(java.util.List)]]
+      */
+    def bulkWrite(requests: Seq[ClientNamespacedWriteModel]): F[ClientBulkWriteResult] =
+        fromSinglePublisher(delegate.bulkWrite(requests.asJava))
+
+    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoCluster.html#bulkWrite(java.util.List,com.mongodb.client.model.bulk.ClientBulkWriteOptions)]]
+      */
+    def bulkWrite(
+        requests: Seq[ClientNamespacedWriteModel],
+        options: ClientBulkWriteOptions
+    ): F[ClientBulkWriteResult] =
+        fromSinglePublisher(delegate.bulkWrite(requests.asJava, options))
 
 object MollyClient:
 
