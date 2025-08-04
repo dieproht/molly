@@ -28,24 +28,24 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
     // medeia-to-molly codec
     import molly.medeia.codec.given
 
-    val trier = City(
+    val trier: City = City(
       name = "Trier",
       state = "Rhineland-Palatinate",
       area = 117.06,
       postalCodes = List("54290", "54292", "54293", "54294", "54295", "54296")
     )
 
-    val ludwigslust =
+    val ludwigslust: City =
         City(name = "Ludwigslust", state = "Mecklenburg-Vorpommern", area = 78.3, postalCodes = List("19288"))
 
-    val flensburg = City(
+    val flensburg: City = City(
       name = "Flensburg",
       state = "Schleswig-Holstein",
       area = 56.73,
       postalCodes = List("24937", "24938", "24939", "24940", "24941", "24942", "24943", "24944")
     )
 
-    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse("mongo:7.0"))
+    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse(mongoVersion))
 
     test("deleteMany: delete given documents from collection") { containers =>
         withClient(containers) { (client: MollyClient[IO]) =>
@@ -148,7 +148,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 _       <- coll.insertMany(Seq(trier, ludwigslust))
                 resDoc  <- coll.findOneAndDelete(Filters.eq("name", "Trier"))
                 resColl <- coll.find().list()
-            yield expect(resDoc == Some(trier))
+            yield expect(resDoc.contains(trier))
                 .and(expect(resColl.size == 1))
                 .and(expect(resColl.contains(ludwigslust)))
         }
@@ -162,7 +162,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 _       <- coll.insertMany(Seq(trier, ludwigslust))
                 resDoc  <- coll.findOneAndDelete(Filters.eq("name", "Bielefeld"))
                 resColl <- coll.find().list()
-            yield expect(resDoc == None)
+            yield expect(resDoc.isEmpty)
                 .and(expect(resColl.size == 2))
                 .and(expect(resColl.contains(trier)))
                 .and(expect(resColl.contains(ludwigslust)))
@@ -178,7 +178,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 _       <- coll.insertMany(Seq(trier, ludwigslust))
                 resDoc  <- coll.findOneAndReplace(Filters.eq("name", "Ludwigslust"), largerLudwigslust)
                 resColl <- coll.find().list()
-            yield expect(resDoc == Some(ludwigslust))
+            yield expect(resDoc.contains(ludwigslust))
                 .and(expect(resColl.size == 2))
                 .and(expect(resColl.contains(trier)))
                 .and(expect(resColl.contains(largerLudwigslust)))
@@ -193,7 +193,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 _       <- coll.insertMany(Seq(trier, ludwigslust))
                 resDoc  <- coll.findOneAndReplace(Filters.eq("name", "Flensburg"), flensburg)
                 resColl <- coll.find().list()
-            yield expect(resDoc == None)
+            yield expect(resDoc.isEmpty)
                 .and(expect(resColl.size == 2))
                 .and(expect(resColl.contains(trier)))
                 .and(expect(resColl.contains(ludwigslust)))
@@ -214,7 +214,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                       FindOneAndReplaceOptions().upsert(true)
                     )
                     resColl <- coll.find().list()
-                yield expect(resDoc == None)
+                yield expect(resDoc.isEmpty)
                     .and(expect(resColl.size == 2))
                     .and(expect(resColl.contains(trier)))
                     .and(expect(resColl.contains(ludwigslust)))
@@ -234,7 +234,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                       FindOneAndReplaceOptions().upsert(false)
                     )
                     resColl <- coll.find().list()
-                yield expect(resDoc == None)
+                yield expect(resDoc.isEmpty)
                     .and(expect(resColl.size == 1))
                     .and(expect(resColl.contains(trier)))
                     .and(expect(!resColl.contains(ludwigslust)))
@@ -250,7 +250,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 _       <- coll.insertMany(Seq(trier, flensburg))
                 resDoc  <- coll.findOneAndUpdate(Filters.eq("name", "Flensburg"), Updates.set("area", 105.5))
                 resColl <- coll.find().list()
-            yield expect(resDoc == Some(flensburg))
+            yield expect(resDoc.contains(flensburg))
                 .and(expect(resColl.size == 2))
                 .and(expect(resColl.contains(trier)))
                 .and(expect(resColl.contains(largerFlensburg)))
@@ -265,7 +265,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 _       <- coll.insertMany(Seq(trier, ludwigslust))
                 resDoc  <- coll.findOneAndUpdate(Filters.eq("name", "Flensburg"), Updates.set("area", 100))
                 resColl <- coll.find().list()
-            yield expect(resDoc == None)
+            yield expect(resDoc.isEmpty)
                 .and(expect(resColl.size == 2))
                 .and(expect(resColl.contains(trier)))
                 .and(expect(resColl.contains(ludwigslust)))
@@ -356,12 +356,12 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 resultsAsc  <- coll.find().sort(Sorts.ascending("area")).list()
                 resultsDesc <- coll.find().sort(Sorts.descending("area")).list()
             yield expect(resultsAsc.size == 3)
-                .and(expect(resultsAsc(0) == flensburg))
+                .and(expect(resultsAsc.head == flensburg))
                 .and(expect(resultsAsc(1) == ludwigslust))
                 .and(expect(resultsAsc(2) == trier))
                 .and(expect(resultsDesc(2) == flensburg))
                 .and(expect(resultsDesc(1) == ludwigslust))
-                .and(expect(resultsDesc(0) == trier))
+                .and(expect(resultsDesc.head == trier))
         }
     }
 
@@ -420,7 +420,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 .and(expect(csDocs.exists(_.getFullDocument == trier)))
                 .and(expect(csDocs.exists(_.getFullDocument == ludwigslust)))
                 .and(expect(csDocs.exists(_.getFullDocument == flensburg)))
-                .and(expect(csDocs.forall(_.getOperationTypeString() == "insert")))
+                .and(expect(csDocs.forall(_.getOperationTypeString == "insert")))
         }
     }
 
@@ -452,8 +452,8 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 .and(expect(csDocs.exists(_.getFullDocument == ludwigslust)))
                 .and(expect(csDocs.exists(_.getFullDocument == flensburg)))
                 .and(expect(csDocs.exists(_.getFullDocument == largerLudwigslust)))
-                .and(expect(csDocs.take(3).forall(_.getOperationTypeString() == "insert")))
-                .and(expect(csDocs.last.getOperationTypeString() == "update"))
+                .and(expect(csDocs.take(3).forall(_.getOperationTypeString == "insert")))
+                .and(expect(csDocs.last.getOperationTypeString == "update"))
         }
     }
 }

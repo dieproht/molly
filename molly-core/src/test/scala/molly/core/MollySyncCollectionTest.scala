@@ -12,11 +12,11 @@ import org.bson.BsonInt32
 import org.testcontainers.utility.DockerImageName
 import weaver.IOSuite
 
+import java.util.Objects
 import scala.concurrent.duration.*
+object MollySyncCollectionTest extends IOSuite, TestContainerForAll[IO], MollyTestSupport:
 
-object MollySyncCollectionTest extends IOSuite with TestContainerForAll[IO] with MollyTestSupport:
-
-    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse("mongo:7.0"))
+    override val containerDef: MongoDBContainer.Def = MongoDBContainer.Def(DockerImageName.parse(mongoVersion))
 
     private val eta = 200.millis
 
@@ -39,11 +39,11 @@ object MollySyncCollectionTest extends IOSuite with TestContainerForAll[IO] with
                     syncColl <- syncDb.getCollection("watch1")
                     csDocs   <- runChangeStream(syncColl).both(insert(coll)).map(_._1)
                 yield expect(csDocs.size == 3)
-                    .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(1)))))
-                    .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(2)))))
-                    .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(3)))))
-                    .and(expect(csDocs.forall(_.getOperationTypeString() == "insert")))
-                    .and(expect(csDocs.forall(_.getFullDocument() != null)))
+                    .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(1)))))
+                    .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(2)))))
+                    .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(3)))))
+                    .and(expect(csDocs.forall(_.getOperationTypeString == "insert")))
+                    .and(expect(csDocs.forall(d => Objects.nonNull(d.getFullDocument))))
 
     test("watch: return one change per inserted document with buffer size greater than result size"): containers =>
         withClient(containers): (client: MollyClient[IO]) =>
@@ -64,10 +64,10 @@ object MollySyncCollectionTest extends IOSuite with TestContainerForAll[IO] with
                     syncColl <- syncDb.getCollection("watch2")
                     csDocs   <- runChangeStream(syncColl).both(insert(coll)).map(_._1)
                 yield expect(csDocs.size == 3)
-                    .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(1)))))
-                    .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(2)))))
-                    .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(3)))))
-                    .and(expect(csDocs.forall(_.getOperationTypeString() == "insert")))
+                    .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(1)))))
+                    .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(2)))))
+                    .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(3)))))
+                    .and(expect(csDocs.forall(_.getOperationTypeString == "insert")))
 
     test("watch: return different changes"): containers =>
         withClient(containers): (client: MollyClient[IO]) =>
@@ -92,11 +92,11 @@ object MollySyncCollectionTest extends IOSuite with TestContainerForAll[IO] with
                     syncColl <- syncDb.getCollection("watch3")
                     csDocs   <- runChangeStream(syncColl).both(insertAndUpdate(coll)).map(_._1)
                 yield expect(csDocs.size == 4)
-                    .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(1)))))
-                    .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(2)))))
-                    .and(expect(csDocs.exists(_.getDocumentKey() == new BsonDocument("_id", new BsonInt32(3)))))
-                    .and(expect(csDocs.take(3).forall(_.getOperationTypeString() == "insert")))
-                    .and(expect(csDocs.last.getOperationTypeString() == "update"))
+                    .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(1)))))
+                    .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(2)))))
+                    .and(expect(csDocs.exists(_.getDocumentKey == new BsonDocument("_id", new BsonInt32(3)))))
+                    .and(expect(csDocs.take(3).forall(_.getOperationTypeString == "insert")))
+                    .and(expect(csDocs.last.getOperationTypeString == "update"))
 
     test("watch: return one change per inserted document with aggregation applied"): containers =>
         withClient(containers): (client: MollyClient[IO]) =>
@@ -118,4 +118,4 @@ object MollySyncCollectionTest extends IOSuite with TestContainerForAll[IO] with
                     coll     <- db.getCollection("watch4")
                     syncColl <- syncDb.getCollection("watch4")
                     csDocs   <- runChangeStream(syncColl).both(insert(coll)).map(_._1)
-                yield expect(csDocs.size == 3).and(expect(csDocs.forall(_.getFullDocument() == null)))
+                yield expect(csDocs.size == 3).and(expect(csDocs.forall(d => Objects.isNull(d.getFullDocument))))
