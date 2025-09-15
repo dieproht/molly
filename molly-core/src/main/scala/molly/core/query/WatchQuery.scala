@@ -46,6 +46,7 @@ object WatchQuery:
           csd.getOperationTypeString,
           csd.getResumeToken,
           csd.getNamespaceDocument,
+          csd.getNamespaceTypeString,
           csd.getDestinationNamespaceDocument,
           fd.getOrElse(null.asInstanceOf[A]), // scalafix:ok
           fdbc.getOrElse(null.asInstanceOf[A]), // scalafix:ok
