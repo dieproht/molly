@@ -42,17 +42,17 @@ lazy val molly_core = project
           Seq(
             "co.fs2"             %% "fs2-core"                       % "3.12.2",
             "co.fs2"             %% "fs2-reactive-streams"           % "3.12.2",
-            "org.mongodb"         % "bson"                           % "5.6.0",
-            "org.mongodb"         % "mongodb-driver-core"            % "5.6.0",
-            "org.mongodb"         % "mongodb-driver-reactivestreams" % "5.6.0",
-            "org.mongodb"         % "mongodb-driver-sync"            % "5.6.0",
+            "org.mongodb"         % "bson"                           % "5.6.1",
+            "org.mongodb"         % "mongodb-driver-core"            % "5.6.1",
+            "org.mongodb"         % "mongodb-driver-reactivestreams" % "5.6.1",
+            "org.mongodb"         % "mongodb-driver-sync"            % "5.6.1",
             "org.reactivestreams" % "reactive-streams"               % "1.0.4",
             "org.typelevel"      %% "cats-core"                      % "2.13.0",
             "org.typelevel"      %% "cats-effect-kernel"             % "3.6.3",
             //
             "ch.qos.logback" % "logback-classic"              % "1.5.18" % Test,
             "com.dimafeng"  %% "testcontainers-scala-mongodb" % "0.43.0" % Test,
-            "org.typelevel" %% "weaver-cats"                  % "0.10.1"  % Test,
+            "org.typelevel" %% "weaver-cats"                  % "0.10.1" % Test,
             "org.scalatest" %% "scalatest"                    % "3.2.19" % Test,
             "org.typelevel" %% "cats-effect"                  % "3.6.3"  % Test
           )
@@ -66,13 +66,13 @@ lazy val molly_medeia = project
       libraryDependencies ++=
           Seq(
             "de.megaera"    %% "medeia"             % "1.0.2",
-            "org.mongodb"    % "bson"               % "5.6.0",
+            "org.mongodb"    % "bson"               % "5.6.1",
             "org.typelevel" %% "cats-core"          % "2.13.0",
             "org.typelevel" %% "cats-effect-kernel" % "3.6.3",
             //
             "ch.qos.logback" % "logback-classic"              % "1.5.18" % Test,
             "com.dimafeng"  %% "testcontainers-scala-mongodb" % "0.43.0" % Test,
-            "org.typelevel" %% "weaver-cats"                  % "0.10.1"  % Test,
+            "org.typelevel" %% "weaver-cats"                  % "0.10.1" % Test,
             "org.typelevel" %% "cats-effect"                  % "3.6.3"  % Test
           )
     )
