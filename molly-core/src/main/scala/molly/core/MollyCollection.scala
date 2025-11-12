@@ -34,7 +34,6 @@ import org.bson.BsonDocument
 import org.bson.Document
 import org.bson.conversions.Bson
 
-import java.lang
 import scala.jdk.CollectionConverters.*
 
 /** Molly's counterpart to
