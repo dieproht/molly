@@ -405,7 +405,6 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
 
     test("watch: return one change per inserted document") { containers =>
         withClient(containers) { (client: MollyClient[IO]) =>
-
             def runChangeStream(coll: MollyCollection[IO, City]) =
                 coll.watch().stream(bufferSize = 1).take(3).compile.toList
 
