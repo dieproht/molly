@@ -50,7 +50,7 @@ lazy val molly_core = project
             "org.typelevel"      %% "cats-core"                      % "2.13.0",
             "org.typelevel"      %% "cats-effect-kernel"             % "3.6.3",
             //
-            "ch.qos.logback" % "logback-classic"              % "1.5.28" % Test,
+            "ch.qos.logback" % "logback-classic"              % "1.5.29" % Test,
             "com.dimafeng"  %% "testcontainers-scala-mongodb" % "0.44.1" % Test,
             "org.typelevel" %% "weaver-cats"                  % "0.11.3" % Test,
             "org.scalatest" %% "scalatest"                    % "3.2.19" % Test,
@@ -70,7 +70,7 @@ lazy val molly_medeia = project
             "org.typelevel" %% "cats-core"          % "2.13.0",
             "org.typelevel" %% "cats-effect-kernel" % "3.6.3",
             //
-            "ch.qos.logback" % "logback-classic"              % "1.5.28" % Test,
+            "ch.qos.logback" % "logback-classic"              % "1.5.29" % Test,
             "com.dimafeng"  %% "testcontainers-scala-mongodb" % "0.44.1" % Test,
             "org.typelevel" %% "weaver-cats"                  % "0.11.3" % Test,
             "org.typelevel" %% "cats-effect"                  % "3.6.3"  % Test
