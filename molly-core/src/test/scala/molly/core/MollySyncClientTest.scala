@@ -4,7 +4,6 @@ import cats.effect.IO
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.MongoTimeoutException
-import org.bson.BsonDocument
 import weaver.SimpleIOSuite
 
 import java.util.concurrent.TimeUnit

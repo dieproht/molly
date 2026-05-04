@@ -6,9 +6,6 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.MongoTimeoutException
 import com.mongodb.client.model.bulk.ClientNamespacedWriteModel
-import molly.core.MollyCollectionTest.expect
-import molly.core.MollyCollectionTest.test
-import molly.core.MollyCollectionTest.withClient
 import molly.core.syntax.bson.BsonInt32
 import molly.core.syntax.bson.BsonString
 import molly.core.syntax.bsondocument.*
@@ -69,7 +66,7 @@ object MollyClientTest extends IOSuite, TestContainerForAll[IO], MollyTestSuppor
             )
 
             for
-                -       <- client.bulkWrite(writeModels)
+                _       <- client.bulkWrite(writeModels)
                 db      <- client.getDatabase("test")
                 coll1   <- db.getCollection("foo")
                 coll2   <- db.getCollection("bar")

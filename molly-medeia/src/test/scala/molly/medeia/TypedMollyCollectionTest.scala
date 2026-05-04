@@ -306,7 +306,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 db      <- client.getDatabase("test")
                 coll    <- db.getTypedCollection[City]("replaceOne1")
                 _       <- coll.insertMany(Seq(trier, ludwigslust))
-                res     <- coll.replaceOne(Filters.eq("name", "Ludwigslust"), largerLudwigslust)
+                _       <- coll.replaceOne(Filters.eq("name", "Ludwigslust"), largerLudwigslust)
                 results <- coll.find().list()
             yield expect(results.size == 2)
                 .and(expect(results.contains(trier)))
@@ -321,7 +321,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 db   <- client.getDatabase("test")
                 coll <- db.getTypedCollection[City]("replaceOne2")
                 _    <- coll.insertMany(Seq(trier))
-                res  <- coll.replaceOne(Filters.eq("name", "Ludwigslust"), ludwigslust, ReplaceOptions().upsert(true))
+                _    <- coll.replaceOne(Filters.eq("name", "Ludwigslust"), ludwigslust, ReplaceOptions().upsert(true))
                 results <- coll.find().list()
             yield expect(results.size == 2)
                 .and(expect(results.contains(trier)))
@@ -335,7 +335,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 db   <- client.getDatabase("test")
                 coll <- db.getTypedCollection[City]("replaceOne3")
                 _    <- coll.insertMany(Seq(trier))
-                res  <- coll.replaceOne(
+                _    <- coll.replaceOne(
                   Filters.eq("name", ludwigslust.name),
                   ludwigslust,
                   ReplaceOptions().upsert(false)
@@ -373,7 +373,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 db      <- client.getDatabase("test")
                 coll    <- db.getTypedCollection[City]("updateMany")
                 _       <- coll.insertMany(Seq(trier, ludwigslust, flensburg))
-                res     <- coll.updateMany(Filters.in("name", "Ludwigslust", "Flensburg"), Updates.set("area", 80.5))
+                _       <- coll.updateMany(Filters.in("name", "Ludwigslust", "Flensburg"), Updates.set("area", 80.5))
                 results <- coll.find().list()
             yield expect(results.size == 3)
                 .and(expect(results.contains(trier)))
@@ -391,7 +391,7 @@ object TypedMollyCollectionTest extends IOSuite with TestContainerForAll[IO] wit
                 db      <- client.getDatabase("test")
                 coll    <- db.getTypedCollection[City]("updateOne")
                 _       <- coll.insertMany(Seq(trier, ludwigslust, flensburg))
-                res     <- coll.updateOne(Filters.eq("name", "Ludwigslust"), Updates.set("area", 80.5))
+                _       <- coll.updateOne(Filters.eq("name", "Ludwigslust"), Updates.set("area", 80.5))
                 results <- coll.find().list()
             yield expect(results.size == 3)
                 .and(expect(results.contains(trier)))
