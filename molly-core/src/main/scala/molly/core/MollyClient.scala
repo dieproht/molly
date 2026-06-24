@@ -15,11 +15,11 @@ import molly.core.reactivestreams.fromSinglePublisher
 import scala.jdk.CollectionConverters.*
 
 /** Molly's counterpart to
-  * [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoClient.html MongoClient]].
+  * [[https://mongodb.github.io/mongo-java-driver/5.8/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoClient.html MongoClient]].
   */
 final case class MollyClient[F[_]] private (private[core] val delegate: MongoClient)(using f: Async[F]):
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoClient.html#getDatabase(java.lang.String)]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.8/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoClient.html#getDatabase(java.lang.String)]]
       */
     def getDatabase(name: String): F[MollyDatabase[F]] =
         f.delay(delegate.getDatabase(name)).map(MollyDatabase(_))
@@ -30,16 +30,16 @@ final case class MollyClient[F[_]] private (private[core] val delegate: MongoCli
     def getDatabaseAsResource(name: String): Resource[F, MollyDatabase[F]] =
         Resource.eval(getDatabase(name))
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoClient.html#getClusterDescription()]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.8/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoClient.html#getClusterDescription()]]
       */
     def getClusterDescription(): ClusterDescription = delegate.getClusterDescription()
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoCluster.html#bulkWrite(java.util.List)]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.8/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoCluster.html#bulkWrite(java.util.List)]]
       */
     def bulkWrite(requests: Seq[ClientNamespacedWriteModel]): F[ClientBulkWriteResult] =
         fromSinglePublisher(delegate.bulkWrite(requests.asJava))
 
-    /** [[https://mongodb.github.io/mongo-java-driver/5.5/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoCluster.html#bulkWrite(java.util.List,com.mongodb.client.model.bulk.ClientBulkWriteOptions)]]
+    /** [[https://mongodb.github.io/mongo-java-driver/5.8/apidocs/driver-reactive-streams/com/mongodb/reactivestreams/client/MongoCluster.html#bulkWrite(java.util.List,com.mongodb.client.model.bulk.ClientBulkWriteOptions)]]
       */
     def bulkWrite(
         requests: Seq[ClientNamespacedWriteModel],
