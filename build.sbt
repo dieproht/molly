@@ -42,10 +42,10 @@ lazy val molly_core = project
           Seq(
             "co.fs2"             %% "fs2-core"                       % "3.13.0",
             "co.fs2"             %% "fs2-reactive-streams"           % "3.13.0",
-            "org.mongodb"         % "bson"                           % "5.7.1",
-            "org.mongodb"         % "mongodb-driver-core"            % "5.7.1",
-            "org.mongodb"         % "mongodb-driver-reactivestreams" % "5.7.1",
-            "org.mongodb"         % "mongodb-driver-sync"            % "5.7.1",
+            "org.mongodb"         % "bson"                           % "5.8.0",
+            "org.mongodb"         % "mongodb-driver-core"            % "5.8.0",
+            "org.mongodb"         % "mongodb-driver-reactivestreams" % "5.8.0",
+            "org.mongodb"         % "mongodb-driver-sync"            % "5.8.0",
             "org.reactivestreams" % "reactive-streams"               % "1.0.4",
             "org.typelevel"      %% "cats-core"                      % "2.13.0",
             "org.typelevel"      %% "cats-effect-kernel"             % "3.7.0",
@@ -66,7 +66,7 @@ lazy val molly_medeia = project
       libraryDependencies ++=
           Seq(
             "de.megaera"    %% "medeia"             % "1.0.9",
-            "org.mongodb"    % "bson"               % "5.7.1",
+            "org.mongodb"    % "bson"               % "5.8.0",
             "org.typelevel" %% "cats-core"          % "2.13.0",
             "org.typelevel" %% "cats-effect-kernel" % "3.7.0",
             //
