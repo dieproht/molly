@@ -5,19 +5,20 @@ on:
     branches: [ main ]
   pull_request:
 
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v7
-    - name: Setup Java and Scala
-      uses: actions/setup-java@v6
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-        cache: 'sbt'
-    - name: Setup SBT
-      uses: sbt/setup-sbt@v1
-    - name: Build and Test
-      run: sbt -v test
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Java and Scala
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+          cache: 'sbt'
+      - name: Setup SBT
+        uses: sbt/setup-sbt@v1
+      - name: Build and Test
+        run: sbt -v test

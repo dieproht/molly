@@ -1,7 +1,7 @@
 name: release
 on:
   push:
-    tags: ["*"]
+    tags: [ "*" ]
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -13,7 +13,7 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '25'
           cache: 'sbt'
       - name: Setup SBT
         uses: sbt/setup-sbt@v1
