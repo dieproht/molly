@@ -22,13 +22,13 @@ def commonSettings = Seq(
   scalacOptions ++= Seq(
     "-encoding",
     "UTF-8",
+    "-java-output-version",
+    "25",
     "-explain",
     "-explain-types",
     "-deprecation",
     "-feature",
     "-unchecked",
-    "-source:3.9",
-    "-release:25",
     "-Wunused:all"
   )
 )
