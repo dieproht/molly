@@ -7,7 +7,7 @@ import com.mongodb.MongoClientSettings
 
 trait MollyTestSupport:
 
-    def mongoVersion: String = "mongo:8.0"
+    def mongoVersion: String = "mongo:9.0"
 
     def withClient[F[_], A](containers: MongoDBContainer)(run: MollyClient[F] => F[A])(using Async[F]): F[A] =
         val connectionString: String = containers.container.getConnectionString
