@@ -27,8 +27,8 @@ def commonSettings = Seq(
     "-deprecation",
     "-feature",
     "-unchecked",
-    "-source:3.3",
-    "-release:17",
+    "-source:3.9",
+    "-release:25",
     "-Wunused:all"
   )
 )
